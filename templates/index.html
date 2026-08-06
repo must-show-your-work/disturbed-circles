@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+  {{ section.content | safe }}
+</section>
+
+{% if section.pages %}
+<ul class="post-list">
+  {% for page in section.pages %}
+  <li>
+    <a href="{{ page.permalink }}">{{ page.title }}</a>
+    {# Sections whose entries are titled by date suppress the redundant stamp. #}
+    {% if page.date and not section.extra.titles_are_dates | default(value=false) %}
+    <time datetime="{{ page.date }}">{{ page.date | date(format="%Y-%m-%d") }}</time>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

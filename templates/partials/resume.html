@@ -1,0 +1,203 @@
+<!--
+
+Why hello there, welcome to the director's commentary.
+
+-->
+<header class="masthead">
+    <h1>Joe <span class="nickname">&lsquo;Oz&rsquo;</span> Fredette</h1>
+    <p class="tagline">Infrastructure &amp; Platform Engineer</p>
+    <ul class="contact">
+        <li><a href="mailto:jfredett@gmail.com">jfredett@gmail.com</a></li>
+        <li>Gardner, MA &middot; Remote</li>
+        <li><a href="https://github.com/jfredett">github.com/jfredett</a></li>
+    </ul>
+</header>
+
+<section class="summary">
+    <p>
+        Fifteen years building and operating the deployment platform behind a $50M+/yr regulated clinical data capture
+        and reporting suite. My specialty is navigating the complex web of distributed systems, building them, and
+        translating them to regulators and teammates alike. Audit representative in HIPAA, ISO 27k and 9k, 21 CFR Part
+        11, and Customer-led ad hoc audits for ten of those years; with experience fielding questions and explaining
+        complicated enterprise systems to non-technical audit and regulatory staff.
+        <!--
+
+        You should _absolutely_ ask me about the time I got grilled for 45 minutes by a Danish regulator who didn't
+        understand that I wasn't the compliance lead for a different product at IBM.
+
+        That was my _second_ time in an audit.
+
+        -->
+    </p>
+</section>
+
+<section>
+    <h2>Experience</h2>
+
+    <article class="role">
+        <div class="role-head">
+            <h3>Principal Developer, Operations Lead</h3>
+            <span class="dates">2014 &ndash; Present</span>
+        </div>
+        <div class="role-sub">
+            <span class="org">Merative - Zelta</span>
+            <span class="org-note">formerly Merge Healthcare; acquired by IBM 2016, divested 2022</span>
+            <span class="where">Remote</span>
+        </div>
+        <ul>
+            <li>
+                Own the deployment platform for the company&rsquo;s 'Zelta' product ($50M+/yr revenue) through every
+                generation of its infrastructure. Taking it from on prem, to hybrid cloud, then cloud. Simultaneously from
+                manual deployment on bare metal on Windows to fully virtualized, disposable infrastructure in Azure. This
+                bullet cannot contain all the detail that belongs in it.
+            </li>
+            <li>
+                Defended highly-regulated systems in audit. HIPAA, ISO 9k/27k, GDPR, 21 CFR Part 11, and Customer
+                ad hoc sessions. Represented complex enterprise systems, especially those which have taken careful
+                tradeoffs in design, and proved those systems are compliant with regulations. Designed and built
+                those same systems, identified and made those tradeoffs, and found ways to ensure we could exceed
+                the demands of the regulations to provide a high quality product.
+            </li>
+            <li>
+                Rebuilt and refactored the build-and-release process from a four-hour, manual, mouse-driven mutliple-RDP
+                session; to a zero-downtime, push-button model. Current project involves capturing the broader release flow
+                in a durable-computing style workflow.
+            </li>
+            <li>
+                Maintain clean {Link to Qualys tool I use}, {Azure tool}, {etc}; keeping a multi-step patching cadence and
+                review workflow to ensure issues are handled quickly and safely. Managed and coordinated multiple pentests,
+                and co-lead a three person security review team for the product's infrastructure.
+            </li>
+            <li>
+                Integrated against legacy enterprise systems during the migration to the cloud. Managed dozens
+                of sunsetting/retirements of these systems as they were replaced. Moved from an on-prem bare
+                metal Oracle/MySQL infrastructure to managed Oracle/PostgreSQL in Oracle@Azure and
+                CrunchyBridge, respectively.
+            </li>
+            <li>
+                Maintain a Backup system that supports arbitrary deployment of instances of the main application on demand.
+                Including automated syncing of 'nightly copy' environments for use by support and development that mirror
+                the primary system. Additionally allowing for ad hoc deployment of environments. Current projects include
+                refactoring this process to use durable computing workflows.
+            </li>
+            <li>
+                Wrote and maintain the 40,000-word Operator&rsquo;s Manual that onboards and runs the operations
+                team (8-12 people, depending on how you count), plus all other team documentation, regulatory and otherwise.
+                Mentor new hires on the systems and on the constraints they operate under. Run a weekly "Office Hours"
+                fielding questions, pairing on problems, and facilitating collaboration.
+            </li>
+        </ul>
+    </article>
+
+    <article class="role">
+        <div class="role-head">
+            <h3>Software Engineer</h3>
+            <span class="dates">2011 &ndash; 2013</span>
+        </div>
+        <div class="role-sub">
+            <span class="org">Vermonster LLC</span>
+            <span class="where">Boston, MA</span>
+        </div>
+        <ul>
+            <li>Built <em>Women&rsquo;s Worlds of Qajar Iran</em> (qajarwomen.org) as primary
+                developer and ops lead &mdash; static S3 plus an Elasticsearch-backed catalog
+                system, deliberately cheap to run, still in active use fifteen years later.</li>
+            <li>Built CDS-Onc, a chemotherapy decision support system encoding the NCCN
+                treatment guidelines as a novel Ruby eDSL, including the multivalued logic
+                system underneath it.<a href="#fn1" id="fnref1" class="fnref">1</a></li>
+        </ul>
+    </article>
+
+    <article class="role">
+        <div class="role-head">
+            <h3>Software Engineer</h3>
+            <span class="dates">2010 &ndash; 2011</span>
+        </div>
+        <div class="role-sub">
+            <span class="org">Explorica Travel</span>
+            <span class="where">Boston, MA</span>
+        </div>
+        <ul>
+            <li>Rebuilt the passport management system to modern coding and regulatory
+                standards; re-architected the finance and expense reporting system.</li>
+        </ul>
+    </article>
+</section>
+
+<section>
+    <h2>Tools</h2>
+    <dl class="skills">
+        <dt>Languages</dt>
+        <dd>Rust, Ruby, Python, Lean 4, Nix, JavaScript/TypeScript, Scala, Java, Haskell</dd>
+        <dt>Azure</dt>
+        <dd>AKS, Bicep, Azure Monitor / Log Analytics, Managed Prometheus, Azure Firewall, managed Oracle &amp; PostgreSQL</dd>
+        <dt>Platform</dt>
+        <dd>Kubernetes (AKS, k3s, self-hosted), Helm, Ansible, Terraform, GitHub Actions, Jenkins, Temporal, NixOS, Cilium</dd>
+        <dt>Observability</dt>
+        <dd>Prometheus, Grafana, ELK, PagerDuty, Cloudflare, SumoLogic</dd>
+        <dt>AI systems</dt>
+        <dd>Claude and Claude Code, agentic tooling and MCP, distributed self-hosted inference across a heterogeneous GPU fleet, retrieval over large polyglot codebases</dd>
+        <dt>Data</dt>
+        <dd>PostgreSQL and Oracle, both self-managed and cloud-managed; Redis, Elasticsearch</dd>
+        <dt>Regulatory</dt>
+        <dd>HIPAA, ISO 9001/27001, GDPR, 21 CFR Part 11</dd>
+    </dl>
+</section>
+
+<section>
+    <h2>Selected Work</h2>
+    <ul class="projects">
+        <li><strong>Durable release pipelines on Temporal</strong> &mdash; prototyping
+            at home what I intend to ship at work: multi-party sign-off, resumable
+            long-running workflows, and an audit log that survives the worker dying
+            mid-release.</li>
+
+        <li><strong>LLM systems in the operations path</strong> &mdash; agent-driven
+            development workflow, retrieval over a large polyglot monorepo, and self-hosted
+            inference distributed across a heterogeneous fleet &mdash; nearly every
+            GPU-capable machine in the house takes arbitrary workloads &mdash; alongside
+            hosted models. Feeds directly into the Tier 0 canary work above.</li>
+
+        <li><strong>Homelab &mdash; &ldquo;Fleet in Being&rdquo;</strong> &mdash; k3s on
+            NixOS across Dell R730s, Cilium, Prometheus/Grafana, LoRaWAN sensors, gitops
+            all the way down. Everything gets tried here before work sees it.</li>
+
+        <li><strong>Lean 4 / Mathlib formalization</strong> &mdash; <em>Geometry Is Your
+            Friend</em>, a formalization of classical geometry, plus <em>Tanglings</em>, an
+            in-progress sheaf-theoretic and categorical reworking of it. Dependently typed
+            functional programming, done deliberately in Mathlib idiom.</li>
+
+        <li><strong>Brocard&rsquo;s problem search</strong> &mdash; distributed computational
+            search in Rust, pushing the known bound on <em>n</em>!&nbsp;+&nbsp;1&nbsp;=&nbsp;<em>m</em><sup>2</sup>.</li>
+
+        <li><strong>Community and writing</strong> &mdash; edited the <em>Haskell Weekly
+            News</em> (2009&ndash;2010, succeeding Brent Yorgey) and still listed as a moderator
+            of /r/haskell. Wrote <em>Right Prime Rings and Weiner Indices of Certain Graphs</em>
+            for the MAA <em>Mathematics Magazine</em>. See also the Operator&rsquo;s Manual above.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Education</h2>
+    <article class="role">
+        <div class="role-head">
+            <h3>B.S. Mathematics</h3>
+            <span class="dates">2010</span>
+        </div>
+        <div class="role-sub">
+            <span class="org">Worcester State University</span>
+            <span class="org-note">transferred from Worcester Polytechnic Institute, Mathematics &amp; Computer Science, 2005&ndash;2007</span>
+        </div>
+        <ul>
+            <li>President, Worcester State Math Club, 2008&ndash;2010. Eagle Scout, 2005.</li>
+        </ul>
+    </article>
+</section>
+
+<footer class="notes">
+    <p id="fn1"><a href="#fnref1" class="fnnum">1</a> Ask me how abstract algebra resolved a
+        longstanding ambiguity that was blocking development -- a good story, too long
+        for the margin of this resume.</p>
+</footer>
+
+

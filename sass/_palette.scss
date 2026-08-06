@@ -1,0 +1,19 @@
+// New England fall, after dark: wet bark and leaf-duff for the ground,
+// birch-bark parchment for the text, and the canopy — sugar maple, amber,
+// goldenrod, late moss — reserved for accents.
+//
+// Leading underscore: Zola treats this as a partial and does not compile it to
+// its own .css. Imported by main.scss and resume-print.scss so the screen and
+// print renderings can't drift apart.
+$bark:      #16120f;  // page
+$duff:      #201a15;  // raised surfaces: code, quotes
+$rule:      #33291f;  // hairlines
+$birch:     #ece3d5;  // body text
+$lichen:    #9d9080;  // muted text
+$maple:     #d95f43;  // links, primary accent
+$amber:     #e69138;  // hover, h2
+$goldenrod: #d9ab4e;  // h3, inline code
+$moss:      #8a9a63;  // h4+, quote marker
+
+$font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$mono-stack: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;

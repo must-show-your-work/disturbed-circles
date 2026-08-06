@@ -1,0 +1,77 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Zola
+        run: |
+          # 0.22+ required: config.toml uses the giallo [markdown.highlighting]
+          # table, which older releases reject outright. Keep in step with the
+          # zola in flake.nix.
+          ZOLA_VERSION=0.22.1
+          curl -sL "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz" | tar xz
+          sudo mv zola /usr/local/bin/
+
+      - name: Install WeasyPrint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b
+          pipx install weasyprint
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Build Svelte
+        run: |
+          cd svelte
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      # Mirrors `just pdf`: the first build produces the print page and its
+      # stylesheet, weasyprint turns them into static/resume.pdf, and the second
+      # build copies that into public/ as a static asset.
+      - name: Render résumé PDF
+        run: |
+          zola build
+          weasyprint -s public/resume-print.css public/resume/print/index.html static/resume.pdf
+
+      - name: Build Zola
+        run: zola build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

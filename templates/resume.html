@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }}{% endblock %}
+
+{% block content %}
+<div class="resume">
+  <p class="pdf-link"><a href="{{ get_url(path='resume.pdf') }}">Download as PDF</a></p>
+  {% include "partials/resume.html" %}
+</div>
+{% endblock %}

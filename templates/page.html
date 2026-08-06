@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+{# The nearest enclosing section decides whether the date is worth printing:
+   in lab-journal the title *is* the date, so repeating it is noise. #}
+{% set parent = get_section(path=page.ancestors | last, metadata_only=true) %}
+<article>
+  <h2>{{ page.title }}</h2>
+  {% if page.date and not parent.extra.titles_are_dates | default(value=false) %}
+  <time datetime="{{ page.date }}">{{ page.date | date(format="%Y-%m-%d") }}</time>
+  {% endif %}
+  {{ page.content | safe }}
+</article>
+{% endblock %}

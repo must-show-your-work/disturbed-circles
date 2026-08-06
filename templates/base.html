@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="{{ config.default_language }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>{% block title %}{{ config.title }}{% endblock %}</title>
+  {% if config.generate_feeds %}
+  <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ get_url(path="atom.xml", trailing_slash=false) }}">
+  {% endif %}
+  {# giallo first: main.css overrides the generated theme's listing background. #}
+  <link rel="stylesheet" href="{{ get_url(path="giallo.css") }}">
+  <link rel="stylesheet" href="{{ get_url(path="main.css") }}">
+  <link rel="stylesheet" href="{{ get_url(path="svelte/bundle.css") }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="{{ config.base_url }}">{{ config.title }}</a>
+      {# Nav is derived from the top-level sections, ordered by each one's
+         `weight`, so a new content/<name>/_index.md shows up here on its own.
+         `extra.nav_title` overrides the (long) page title for the link text. #}
+      <nav>
+        {% set root = get_section(path="_index.md") %}
+        <ul>
+          {% for path in root.subsections %}
+          {% set s = get_section(path=path, metadata_only=true) %}
+          <li>
+            <a href="{{ s.permalink }}"
+               {% if current_path is starting_with(s.path) %}aria-current="true"{% endif %}>
+              {{ s.extra.nav_title | default(value=s.title) }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="column">
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+      <footer>
+        <small>built with <a href="https://www.getzola.org/">zola</a> + <a href="https://svelte.dev/">svelte</a></small>
+      </footer>
+    </div>
+  </div>
+  {# Carries the svelte mount and the KaTeX auto-render pass, so it must run
+     on every page, not just the section indices. #}
+  <script type="module" src="{{ get_url(path="svelte/main.js") }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

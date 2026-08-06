@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{# Bare document for PDF generation — deliberately links no stylesheet.
+   `just serve` / `just build` hand this to weasyprint with the compiled
+   resume-print.css passed via -s, which keeps the render offline and
+   independent of base_url (the site's own <link> tags are absolute, and
+   weasyprint would try to fetch them over the network). #}
+<html lang="{{ config.default_language }}">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ page.title }}</title>
+</head>
+<body>
+<div class="resume">
+{% include "partials/resume.html" %}
+</div>
+</body>
+</html>

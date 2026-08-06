@@ -1,0 +1,25 @@
+base_url = "https://must-show-your-work.github.io/disturbed-circles"
+title = "disturbed-circles"
+description = "Personal / project blog"
+default_language = "en"
+compile_sass = true
+build_search_index = false
+generate_feeds = true
+feed_filenames = ["atom.xml"]
+
+[markdown]
+smart_punctuation = true
+# Collect footnotes into one section at the end of the article, wherever in
+# the source they were defined, and add a backlink to the reference.
+bottom_footnotes = true
+
+# Zola 0.22+ highlights via giallo (not syntect); theme names and this table's
+# shape both differ from older docs you may find. gruvbox-dark-medium is the
+# warm-brown one, which sits closest to the site palette.
+[markdown.highlighting]
+theme = "gruvbox-dark-medium"
+# Emit classes into public/giallo.css rather than inline style attributes, so
+# main.css can restyle the listing (an inline background would need !important).
+style = "class"
+
+[extra]

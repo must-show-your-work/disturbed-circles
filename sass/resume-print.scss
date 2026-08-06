@@ -1,0 +1,150 @@
+@import "palette";
+
+// Print rendering of the résumé. Compiled by Zola to public/resume-print.css
+// and handed to weasyprint with -s; it is never linked from a page.
+//
+// Ink on paper, so the site's dark palette inverts: the fall accents are kept
+// only where they survive as hairlines and headings at print contrast.
+
+@page {
+  size: letter;
+  margin: 0.6in 0.7in;
+}
+
+body {
+  margin: 0;
+  font-family: $font-stack;
+  font-size: 9.6pt;
+  line-height: 1.42;
+  color: #16120f;
+  background: #fff;
+}
+
+a {
+  color: #7a3524;
+  text-decoration: none;
+}
+
+.masthead {
+  margin-bottom: 0.7em;
+  border-bottom: 1.5pt solid #7a3524;
+  padding-bottom: 0.4em;
+
+  h1 {
+    margin: 0;
+    font-size: 20pt;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #7a3524;
+  }
+
+  .nickname {
+    color: #8a6a3a;
+  }
+
+  .tagline {
+    margin: 0.15em 0 0.4em;
+    font-size: 11pt;
+    color: #4a4038;
+  }
+
+  .contact {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.2em;
+    margin: 0;
+    padding: 0;
+    font-size: 8.8pt;
+    color: #4a4038;
+  }
+}
+
+.summary p {
+  margin: 0.6em 0 0;
+}
+
+h2 {
+  margin: 1.1em 0 0.4em;
+  padding-bottom: 0.12em;
+  border-bottom: 0.5pt solid #b9ad9d;
+  font-size: 11pt;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7a3524;
+  // Never leave a section heading stranded at the foot of a page.
+  break-after: avoid;
+}
+
+.role {
+  margin-top: 0.7em;
+  // Keep the title/date/org preamble with at least the first bullets.
+  break-inside: avoid-page;
+}
+
+.role-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+
+  h3 {
+    margin: 0;
+    font-size: 10.4pt;
+    font-weight: 600;
+  }
+
+  .dates {
+    font-size: 8.8pt;
+    color: #4a4038;
+    white-space: nowrap;
+  }
+}
+
+.role-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6em;
+  margin-bottom: 0.25em;
+  font-size: 9pt;
+
+  .org {
+    font-weight: 600;
+    color: #4a4038;
+  }
+
+  .org-note,
+  .where {
+    color: #6b6055;
+    font-style: italic;
+  }
+}
+
+ul {
+  margin: 0.25em 0;
+  padding-left: 1.1em;
+}
+
+li {
+  margin-bottom: 0.22em;
+}
+
+.fnref,
+.fnnum {
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+}
+
+.notes {
+  margin-top: 1.2em;
+  padding-top: 0.5em;
+  border-top: 0.5pt solid #b9ad9d;
+  font-size: 8.2pt;
+  color: #4a4038;
+
+  p {
+    margin: 0.2em 0;
+  }
+}

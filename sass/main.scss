@@ -1,0 +1,434 @@
+@import "palette";
+
+// Two measures. The grid column is sized so a 160-column code line fits
+// without wrapping or scrolling; prose is capped narrower, at ~120 characters,
+// because 160 is past the point where the eye reliably finds the next line.
+// Code, tables and display math opt out of the prose cap and fill the column.
+//
+// These are computed rather than written as `ch` because `ch` resolves against
+// whatever font the element is in — it would give the wrong track width on the
+// grid (sans, not mono) and a different measure for headings than for body
+// text. The advance figures are per-em glyph widths for each stack.
+$code-columns:    160;
+$code-font-size:  0.9rem;
+$code-advance:    0.6;    // mono is monospaced: exact
+$code-measure: $code-columns * $code-advance * $code-font-size;    // 86.4rem
+
+$prose-columns:   120;
+$prose-font-size: 1.125rem;
+$prose-advance:   0.5;    // proportional: average, not exact
+$prose-measure: $prose-columns * $prose-advance * $prose-font-size;  // 67.5rem
+
+html {
+  background: $bark;
+}
+
+body {
+  font-family: $font-stack;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: $birch;
+  background: $bark;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Sidebar + measure, centred as a pair. minmax(0, …) on the content column
+// keeps a wide <pre> or a long equation from stretching the grid track.
+.layout {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, $code-measure);
+  gap: 3.5rem;
+  justify-content: center;
+  align-items: start;
+  padding: 2.5rem 2rem 4rem;
+}
+
+.column {
+  min-width: 0;
+}
+
+// Running text is capped at the prose measure; anything that benefits from the
+// full column width — code, tables, display math — opts back out below.
+main {
+  p, h1, h2, h3, h4, h5, h6,
+  ul, ol, dl, blockquote, hr, time, .footnotes {
+    max-width: $prose-measure;
+  }
+
+  pre, table, .katex-display {
+    max-width: none;
+  }
+}
+
+::selection {
+  background: rgba($maple, 0.35);
+}
+
+a {
+  color: $maple;
+  text-decoration-color: rgba($maple, 0.4);
+  text-underline-offset: 0.15em;
+
+  &:hover {
+    color: $amber;
+    text-decoration-color: $amber;
+  }
+}
+
+.sidebar {
+  position: sticky;
+  top: 2.5rem;
+  font-size: 0.95rem;
+
+  .brand {
+    display: block;
+    color: $maple;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-decoration: none;
+
+    &:hover {
+      color: $amber;
+    }
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+  }
+
+  nav li + li {
+    margin-top: 0.15rem;
+  }
+
+  nav a {
+    display: block;
+    padding: 0.2rem 0 0.2rem 0.7rem;
+    border-left: 2px solid $rule;
+    color: $lichen;
+    text-decoration: none;
+
+    &:hover {
+      color: $amber;
+      border-left-color: rgba($amber, 0.5);
+    }
+
+    // Section containing the page being viewed.
+    &[aria-current] {
+      color: $goldenrod;
+      border-left-color: $maple;
+    }
+  }
+}
+
+// Sidebar becomes a horizontal rail above the content on narrow screens.
+@media (max-width: 58rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding: 1.5rem 1.25rem 3rem;
+  }
+
+  .sidebar {
+    position: static;
+    border-bottom: 1px solid $rule;
+    padding-bottom: 1rem;
+
+    nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 1.25rem;
+      margin-top: 0.75rem;
+    }
+
+    nav li + li {
+      margin-top: 0;
+    }
+
+    nav a {
+      padding: 0 0 0 0.6rem;
+    }
+  }
+}
+
+h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+  margin: 2.25rem 0 0.75rem;
+}
+
+h2 { font-size: 1.6rem; color: $amber; }
+h3 { font-size: 1.3rem; color: $goldenrod; }
+h4, h5, h6 { font-size: 1.1rem; color: $moss; }
+
+article > h2:first-child {
+  margin-top: 0;
+}
+
+time {
+  display: block;
+  color: $lichen;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid $rule;
+  margin: 2.5rem 0;
+}
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 1.25rem;
+  border-left: 3px solid $moss;
+  background: $duff;
+  color: $lichen;
+}
+
+code, pre {
+  font-family: $mono-stack;
+}
+
+// Inline code. The `:not(pre > code)` guard keeps these rules off the
+// contents of a highlighted block, which zola wraps in <pre><code>.
+:not(pre) > code {
+  background: $duff;
+  color: $goldenrod;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+// Listings have no frame at all. A faint tint at the left margin marks the
+// block, then dissolves into the page well before the right-hand side, so
+// there is no vertical edge out there to catch the eye. `.z-code` is giallo's
+// own rule for the listing background and has to be overridden, not left unset.
+pre,
+pre.z-code {
+  background: linear-gradient(to right, $duff, $bark 70%);
+  border: 0;
+  border-radius: 0;
+  // Horizontal padding is cancelled by the negative margin, so the code still
+  // starts on the prose left edge while the tint leads in slightly before it.
+  padding: 0.6rem 0.75rem;
+  margin: 1.25rem 0 1.25rem -0.75rem;
+  overflow-x: auto;
+  font-size: $code-font-size;
+  line-height: 1.5;
+
+  code {
+    background: none;
+    padding: 0;
+  }
+}
+
+// Footnotes. `bottom_footnotes` collects these into one trailing section, so
+// the label is supplied here rather than by a heading in the source.
+.footnote-reference a {
+  text-decoration: none;
+  padding: 0 0.1em;
+}
+
+.footnotes {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $rule;
+  font-size: 0.95rem;
+  color: $lichen;
+
+  &::before {
+    content: "Footnotes";
+    display: block;
+    margin-bottom: 0.75rem;
+    color: $moss;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  li:target {
+    color: $birch;
+  }
+}
+
+// Math tracks the surrounding text colour rather than inheriting whatever the
+// KaTeX stylesheet happens to leave unset.
+.katex,
+.katex * {
+  color: inherit;
+}
+
+// Display math can be much wider than the measure; scroll it rather than
+// letting it blow out the page.
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+
+  th, td {
+    border-bottom: 1px solid $rule;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  th {
+    color: $goldenrod;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid $rule;
+  }
+
+  time {
+    color: $lichen;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+}
+
+// Résumé, screen rendering. The markup is hand-authored HTML in
+// templates/partials/resume.html; these are baseline styles for its semantic
+// classes. The print rendering lives in resume-print.scss.
+.resume {
+  .pdf-link {
+    margin: 0 0 2rem;
+    font-size: 0.95rem;
+  }
+
+  .masthead {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $rule;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+      color: $maple;
+    }
+
+    .nickname {
+      color: $goldenrod;
+    }
+
+    .tagline {
+      margin: 0.2rem 0 0.8rem;
+      font-size: 1.2rem;
+      color: $amber;
+    }
+
+    .contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 1.5rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.95rem;
+      color: $lichen;
+    }
+  }
+
+  .role {
+    margin-top: 1.75rem;
+  }
+
+  .role-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+
+    h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: $goldenrod;
+    }
+
+    .dates {
+      color: $lichen;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+  }
+
+  .role-sub {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.75rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+
+    .org {
+      color: $birch;
+      font-weight: 600;
+    }
+
+    .org-note,
+    .where {
+      color: $lichen;
+      font-style: italic;
+    }
+  }
+
+  .fnref,
+  .fnnum {
+    font-size: 0.75em;
+    vertical-align: super;
+    text-decoration: none;
+  }
+
+  .notes {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid $rule;
+    font-size: 0.9rem;
+    color: $lichen;
+  }
+}
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $rule;
+  color: $lichen;
+  font-size: 0.875rem;
+
+  a {
+    color: $lichen;
+
+    &:hover {
+      color: $amber;
+    }
+  }
+}
