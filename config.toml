@@ -29,6 +29,9 @@ style = "class"
 # on load by svelte/src/main.ts, so the web copy survives a New Year between
 # deploys. The PDF is fixed at `just pdf` time.
 career_start = 2011
+# Separate anchor: WWQI shipped in 2012, a year after the role started, so the
+# "still in active use N years later" figure counts from its own date.
+wwqi_built = 2012
 number_words = ["zero", "one", "two", "three", "four", "five", "six", "seven",
                 "eight", "nine", "ten", "eleven", "twelve", "thirteen",
                 "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",

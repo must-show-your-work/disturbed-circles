@@ -16,11 +16,17 @@ too. You should tell 'em about me.
 
 <section class="summary">
     <p>
-        <span class="years-since" data-since="{{ config.extra.career_start }}" data-caps="1">{{ career_years | capitalize }}</span> years building and operating the deployment platform behind a $50M+/yr regulated clinical data capture
-        and reporting suite. My specialty is navigating the complex web of distributed systems, building them, and
-        translating them to regulators and teammates alike. Audit representative in HIPAA, ISO 27k and 9k, 21 CFR Part
-        11, and Customer-led ad hoc audits for ten of those years; with experience fielding questions and explaining
-        complicated enterprise systems to non-technical audit and regulatory staff.
+        <span class="years-since" data-since="{{ config.extra.career_start }}" data-caps="1">{{ career_years |
+        capitalize }}</span> years building and operating the deployment platform behind a $50M+/yr regulated clinical
+        data capture and reporting suite. My specialty is navigating the complex web of distributed systems, building
+        them, and translating them to regulators and teammates alike. Audit representative in HIPAA, ISO<a href="#fn1"
+        id="fnref1" class="fnref">1</a>, GxP, 21 CFR Part 11, and Customer-led ad hoc audits for ten of those years; with
+        experience fielding questions and explaining complicated enterprise systems to non-technical audit and
+        regulatory staff.
+    </p>
+    <p>
+        Trained as a mathematician; the work is the same. I prove things.
+
         <!--
 
         You should _absolutely_ ask me about the time I got grilled for 45 minutes by a Danish regulator who didn't
@@ -37,7 +43,8 @@ too. You should tell 'em about me.
 
     <article class="role">
         <div class="role-head">
-            <h3>Principal Developer, Operations Lead</h3>
+            <h3>Lead Developer, Software Development Engineering (SaaS Ops)<a href="#fn2"
+                    id="fnref2" class="fnref">2</a></h3>
             <span class="dates">2014 &ndash; Present</span>
         </div>
         <div class="role-sub">
@@ -47,40 +54,54 @@ too. You should tell 'em about me.
             <span class="org-note">formerly Merge Healthcare; acquired by IBM 2016, divested 2022</span>
             <span class="where">Remote</span>
         </div>
+        <p class="role-intro">
+            Hired to write code. A turnover of the IT department (five departures, three arrivals; I was the
+            second) left the whole architecture without an owner: Zelta, plus the legacy systems around it. I
+            inherited it, sunset the legacy estate, and have kept Zelta running through every infrastructure
+            generation since.
+        </p>
         <ul>
             <li>
                 Own the deployment platform for the company&rsquo;s 'Zelta' product ($50M+/yr revenue) through every
                 generation of its infrastructure. Taking it from on prem, to hybrid cloud, then cloud. Simultaneously from
-                manual deployment on bare metal on Windows to fully virtualized, disposable infrastructure in Azure. This
-                bullet cannot contain all the detail that belongs in it.
+                manual deployment on bare metal on Windows to fully virtualized, disposable infrastructure in Azure.
             </li>
             <li>
-                Defended highly-regulated systems in audit. HIPAA, ISO 9k/27k, GDPR, 21 CFR Part 11, and Customer
+                Defended highly-regulated systems in audit. HIPAA, ISO, GDPR, GxP, 21 CFR Part 11, and Customer
                 ad hoc sessions. Represented complex enterprise systems, especially those which have taken careful
                 tradeoffs in design, and proved those systems are compliant with regulations. Designed and built
                 those same systems, identified and made those tradeoffs, and found ways to ensure we could exceed
                 the demands of the regulations to provide a high quality product.
             </li>
             <li>
-                Rebuilt and refactored the build-and-release process from a four-hour, manual, mouse-driven mutliple-RDP
-                session; to a zero-downtime, push-button model. Current project involves capturing the broader release flow
-                in a durable-computing style workflow.
+                Rebuilt and refactored the build-and-release process from a four-hour, manual, mouse-driven multiple-RDP
+                session; <!-- My first release completed with about 30 seconds to spare on the window. --> to a
+                zero-downtime, push-button model. Current project involves capturing the broader release flow in a
+                durable-computing style workflow.
             </li>
             <li>
-                Maintain clean <a href="https://www.qualys.com/apps/enterprise-trurisk-management">Qualys TruRisk</a>
-                (among other Qualys-suite tools), <a
+                Hardened to <a href="https://www.cisecurity.org/cis-benchmarks">CIS Benchmarks</a> Level 2 since 2017
+                across Windows Server, Ubuntu, Red Hat, and AKS; seven environments plus DR, ~100 VMs,
+                ~130 containers, ~100TB of data. Near-100% in <a
+                href="https://www.qualys.com/apps/enterprise-trurisk-management">Qualys TruRisk</a> (among other
+                Qualys-suite tools), <a
                 href="https://marketplace.microsoft.com/en-us/product/microsoft.azuresecuritycenter?tab=overview">Azure
-                Security</a>, <a
+                Security</a>, and <a
                 href="https://www.microsoft.com/en-us/security/business/cloud-security/microsoft-defender-cloud">Microsoft
-                Defender</a>, among others; keeping a multi-step patching cadence and review workflow to ensure issues are
-                handled quickly and safely. Managed and coordinated multiple pentests, and co-lead a three person
-                security review team for the product's infrastructure.
+                Defender</a>; monitored continuously, evidenced in audit, held there on a multi-step patching cadence.
             </li>
             <li>
-                Integrated against legacy enterprise systems during the migration to the cloud. Managed dozens
-                of sunsetting/retirements of these systems as they were replaced. Moved from an on-prem bare
-                metal Oracle/MySQL infrastructure to managed Oracle/PostgreSQL in Oracle@Azure and
-                CrunchyBridge, respectively.
+                Where an L2 control breaks the application, we fix the application: gap identified, compensating control
+                designed and tracked through a Jira-backed change-control process I built with our compliance lead, then
+                retired once the backend change lands. Coordinated multiple pentests; co-lead a three person security
+                review team.
+            </li>
+            <li>
+                Integrated against legacy enterprise systems during the migration to the cloud. Managed dozens of
+                sunsetting/retirements of these systems as they were replaced. Moved from an on-prem bare metal
+                Oracle/MySQL infrastructure to managed Oracle/PostgreSQL in <a
+                href="https://www.oracle.com/cloud/azure/oracle-database-at-azure/">Oracle@Azure</a> and <a
+                href="https://crunchybridge.com">CrunchyBridge</a>, respectively.
             </li>
             <li>
                 Maintain a Backup system that supports arbitrary deployment of instances of the main application on demand.
@@ -96,9 +117,9 @@ too. You should tell 'em about me.
             </li>
             <li>
                 Maintain all CI/CD (Jenkins) services, insourcing them from an external Merative team into the Zelta
-                team. Moved to a baked-config model to ensure reproducibility <!-- only because I lost the NixOS
-                argument -->, fully automated the CI/CD management so Jenkins updated itself, using a blue/green
-                'componentized' model adapted from our production deployment model <!-- which I also built -->.
+                team. Moved to a baked-config model to ensure reproducibility, <!-- only because I lost the NixOS
+                argument --> fully automated the CI/CD management so Jenkins updated itself, using a blue/green
+                'componentized' model adapted from our production deployment model. <!-- which I also built -->
             </li>
         </ul>
     </article>
@@ -115,13 +136,20 @@ too. You should tell 'em about me.
         <ul>
             <li>
                 Built <a href="https://qajarwomen.org"><em>Women&rsquo;s Worlds of Qajar Iran</em></a>  as primary
-                developer and ops lead &mdash; static S3 plus an Elasticsearch-backed catalog system, deliberately cheap
-                to run, still in active use <span class="years-since" data-since="{{ config.extra.career_start }}">{{ career_years }}</span> years later.
+                developer and ops lead. Static S3 plus an Elasticsearch-backed catalog system, deliberately cheap
+                to run, still in active use <span class="years-since" data-since="{{ config.extra.wwqi_built }}">{{ wwqi_years }}</span> years later.
+                <!-- This is, without a doubt, my favorite project here. I got to work on something really interesting
+                     under some straightforward, well-understood constraints. There was very little money and they spent
+                     most of it on hiring Vermonster, so I got to make sure that good people got their money's worth. I
+                     am proud of everything I've worked on; I wouldn't've continued working on the things I've worked on
+                     if I wasn't, but this is the thing I'm most proud of. When I left this project, the total hosting
+                     bill was in the two-digit dollar range for thousands and thousands of articles. Most of it was the
+                     ES hosting. -->
             </li>
             <li>
                 Built CDS-Onc, a chemotherapy decision support system encoding the NCCN treatment guidelines as a novel
-                Ruby eDSL, including the multivalued logic system underneath it.<a href="#fn1" id="fnref1"
-                class="fnref">1</a>
+                Ruby eDSL, including the multivalued logic system underneath it.<a href="#fn3" id="fnref3"
+                class="fnref">3</a>
             </li>
         </ul>
     </article>
@@ -154,17 +182,17 @@ too. You should tell 'em about me.
         <dt>Languages</dt>
         <dd>Rust, Ruby, Python, Lean 4, Nix, JavaScript/TypeScript, Scala, Java, Haskell</dd>
         <dt>Azure</dt>
-        <dd>AKS, Bicep, Azure Monitor / Log Analytics, Managed Prometheus, Azure Firewall, managed Oracle &amp; PostgreSQL</dd>
+        <dd>Azure AKS, Bicep, Azure Monitor / Log Analytics, Managed Prometheus, Azure Firewall, managed Oracle &amp; PostgreSQL</dd>
         <dt>Platform</dt>
-        <dd>Kubernetes (AKS, k3s, self-hosted), Helm, Ansible, Terraform, GitHub Actions, Jenkins, Temporal, NixOS, Cilium</dd>
+        <dd>Kubernetes (AKS, IBM Cloud Platform, k3s), Helm, Ansible, Terraform, GitHub Actions, Jenkins, Temporal, NixOS, Cilium</dd>
         <dt>Observability</dt>
         <dd>Prometheus, Grafana, ELK, PagerDuty, Cloudflare, SumoLogic</dd>
         <dt>AI systems</dt>
-        <dd>Claude and Claude Code, agentic tooling and MCP, distributed self-hosted inference across a heterogeneous GPU fleet, retrieval over large polyglot codebases</dd>
+        <dd>Claude and Local Models (Qwen and Gemma), agentic tooling and MCP, retrieval over large polyglot codebases</dd>
         <dt>Data</dt>
         <dd>PostgreSQL and Oracle, both self-managed and cloud-managed; Redis, Elasticsearch</dd>
         <dt>Regulatory</dt>
-        <dd>HIPAA, ISO 9k/27k, GDPR, 21 CFR Part 11</dd>
+        <dd>HIPAA, ISO, GDPR, GxP, 21 CFR Part 11, and ad hoc Customer Audits</dd>
     </dl>
 </section>
 
@@ -188,18 +216,20 @@ too. You should tell 'em about me.
         </li>
 
         <li><strong>Math!</strong>
-            <em><a href="https://github.com/must-show-your-work/geometry-is-your-friend">Geometry Is Your
-            Friend</a></em>, a formalization of classical geometry based on <em>Euclidean and Noneuclidean
-            Geometry</em>. As well as <em>Colors to the Chameleon</em> (as yet unpublished), an in-progress categorical
-            model of Neutral Plane Geometry.
+            <a href="https://must-show-your-work.github.io/geometry-is-your-friend/scripts/toc.html#theorem-3.0">Geometry
+            Is Your Friend</a>, a formalization of classical geometry based on <em>Euclidean and Noneuclidean
+            Geometry</em>. Using <a href="https://github.com/must-show-your-work/atlas">Atlas</a> as a custom Lean
+            frontend for displaying and querying Lean codebases. As well as <em>Colors to the Chameleon</em> (as yet
+            unpublished), an in-progress categorical model of Neutral Plane Geometry.
         </li>
 
         <li>
-            <strong>Community and writing</strong>: Edited the <em>Haskell Weekly
-            News</em> (2009&ndash;2010, succeeding Brent Yorgey), occasional moderator
-            of /r/haskell. Wrote <em><a href="https://doi.org/10.4169/002557009X478445">Right Prime Rings (#1810)</a> and <a
-            href="https://doi.org/10.4169/mathmaga.83.1.66a">Weiner Indices of Certain Graphs (#1811)</a> <!-- they
-            actually spelled my name wrong in this one! --></em> for the MAA <em><a href="https://maa.tandfonline.com/journals/umma20">Mathematics Magazine</a></em>.
+            <strong>Community and writing</strong>: Edited the <em>Haskell Weekly News</em> (2009&ndash;2010, succeeding
+            Brent Yorgey), occasional moderator of /r/haskell. Solutions published the MAA <em><a
+            href="https://maa.tandfonline.com/journals/umma20">Mathematics Magazine</a></em>: <em><a
+            href="https://doi.org/10.4169/002557009X478445">Right Prime Rings (#1810)</a> and <a
+            href="https://doi.org/10.4169/mathmaga.83.1.66a">Wiener Indices of Certain Graphs (#1811)</a> <!-- they
+            actually spelled my name wrong in this one! --></em>.
         </li>
     </ul>
 </section>
@@ -222,7 +252,13 @@ too. You should tell 'em about me.
 </section>
 
 <footer class="notes">
-    <p id="fn1"><a href="#fnref1" class="fnnum">1</a> Ask me how abstract algebra resolved a
+    <p id="fn1"><a href="#fnref1" class="fnnum">1</a>
+        "ISO" here means ISO 9001, 27001, 27701, 27017, and others.
+    </p>
+    <p id="fn2"><a href="#fnref2" class="fnnum">2</a>
+        Titles rebanded at each acquisition and the bands don&rsquo;t translate between them. The scope below has been continuous since 2014.
+    </p>
+    <p id="fn3"><a href="#fnref3" class="fnnum">3</a> Ask me how abstract algebra resolved a
         longstanding ambiguity that was blocking development -- a good story, too long
         for the margin of this resume.</p>
 </footer>

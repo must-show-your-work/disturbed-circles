@@ -362,6 +362,13 @@ img {
     margin-top: 1.75rem;
   }
 
+  // Role-level framing paragraph: sits between the org line and the bullets,
+  // and says what the job *is*. The bullets are the evidence for it.
+  .role-intro {
+    margin: 0.5rem 0 0.75rem;
+    color: $lichen;
+  }
+
   .role-head {
     display: flex;
     justify-content: space-between;
