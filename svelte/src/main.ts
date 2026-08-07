@@ -24,3 +24,25 @@ renderMathInElement(document.body, {
   ],
   throwOnError: false
 });
+
+// Re-derive the résumé's "N years" figures against the visitor's clock. Zola
+// already rendered the correct value at build time — this only matters when a
+// New Year passes without a redeploy, and it is why the PDF (no JS) is pinned
+// to whatever `just pdf` saw. Keep in step with `number_words` in config.toml.
+const NUMBER_WORDS = [
+  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
+  'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+  'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty', 'twenty-one',
+  'twenty-two', 'twenty-three', 'twenty-four', 'twenty-five', 'twenty-six',
+  'twenty-seven', 'twenty-eight', 'twenty-nine', 'thirty'
+];
+
+for (const el of document.querySelectorAll<HTMLElement>('.years-since')) {
+  const since = Number(el.dataset.since);
+  if (!Number.isFinite(since)) continue;
+
+  const elapsed = new Date().getFullYear() - since;
+  const word = NUMBER_WORDS[elapsed] ?? String(elapsed);
+
+  el.textContent = el.dataset.caps ? word.charAt(0).toUpperCase() + word.slice(1) : word;
+}

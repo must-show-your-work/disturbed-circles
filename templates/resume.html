@@ -3,6 +3,8 @@
 {% block title %}{{ section.title }}{% endblock %}
 
 {% block content %}
+{% set elapsed = now() | date(format="%Y") | int - config.extra.career_start %}
+{% set career_years = config.extra.number_words | nth(n=elapsed) %}
 <div class="resume">
   <p class="pdf-link"><a href="{{ get_url(path='resume.pdf') }}">Download as PDF</a></p>
   {% include "partials/resume.html" %}

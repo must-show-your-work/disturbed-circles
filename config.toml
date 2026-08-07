@@ -23,3 +23,15 @@ theme = "gruvbox-dark-medium"
 style = "class"
 
 [extra]
+# Anchor for the computed "N years" figures on the résumé. 2011 = first
+# professional role (Vermonster); the summary counts from here. Rendered at
+# build time by templates/resume{,-print}.html and re-derived in the browser
+# on load by svelte/src/main.ts, so the web copy survives a New Year between
+# deploys. The PDF is fixed at `just pdf` time.
+career_start = 2011
+number_words = ["zero", "one", "two", "three", "four", "five", "six", "seven",
+                "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+                "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+                "nineteen", "twenty", "twenty-one", "twenty-two",
+                "twenty-three", "twenty-four", "twenty-five", "twenty-six",
+                "twenty-seven", "twenty-eight", "twenty-nine", "thirty"]

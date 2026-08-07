@@ -82,6 +82,10 @@ display:
 
 Print styling lives in `sass/resume-print.scss` (`@page` size and margins, `break-inside` rules). Both stylesheets `@import "palette"` from `sass/_palette.scss` so screen and print can't drift.
 
+*Elapsed years* ("fifteen years building…") are computed, not typed. `config.toml` holds `extra.career_start` and `extra.number_words`; the templates spell out `now() - career_start` and wrap it in `<span class="years-since" data-since="…">`. `main.ts` re-derives it in the browser on load, so the web copy is right even if a New Year passes without a redeploy. WeasyPrint runs no JS, so the PDF is fixed at `just pdf` time. Add `data-caps="1"` at a sentence start.
+
+*Director's commentary.* The HTML comments in the résumé source are an easter egg for anyone reading view-source. They are **web-only by design** — WeasyPrint discards comments, and surfacing them in the PDF would mean invisible text, which is indistinguishable from ATS keyword-stuffing to a screening tool. Write them freely; they never reach the PDF.
+
 WeasyPrint is not a browser: flexbox works, **CSS grid largely does not**. Keep the résumé's layout to flex and normal flow.
 
 **Code blocks** are highlighted by [giallo](https://github.com/getzola/giallo) (Zola 0.22+, *not* syntect — theme names and config differ from older docs). Theme is `gruvbox-dark-medium`; `lean`, `nix`, `rust`, `toml` and ~220 other grammars are built in.

@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% set elapsed = now() | date(format="%Y") | int - config.extra.career_start %}
+{% set career_years = config.extra.number_words | nth(n=elapsed) %}
 {# Bare document for PDF generation — deliberately links no stylesheet.
    `just serve` / `just build` hand this to weasyprint with the compiled
    resume-print.css passed via -s, which keeps the render offline and
