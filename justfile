@@ -11,7 +11,7 @@ pdf: svelte logs stage
     weasyprint -s public/resume-print.css public/about/resume/print/index.html static/resume.pdf
 
 logs:
-    bin/build-logs
+    bin/build-logs --prefer "${LOGS_PREFER:-path}"
 
 stage: logs
     bin/stage-site
