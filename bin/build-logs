@@ -21,6 +21,7 @@ or both; --prefer decides which is tried first and the other is the fallback.
     branch = "main"             # with `repo`; tries main then master
     file   = "LOG.md"           # defaults to LOG.md
     title  = "some-repo"        # defaults to name
+    slug   = "some-repo"        # URL segment; defaults to a slug of name
     section = "Projects"        # optional heading to group under in the nav
     intro  = "log-intros/x.md"  # defaults to log-intros/<name>.md if present
     weight = 10                 # orders sections in the nav
@@ -211,15 +212,30 @@ def read_source(spec, name, prefer="path"):
     return None, "; ".join(problems) or "no `path`, `repo`, or `url`"
 
 
+def slugify(name):
+    """'Brocard\'s Problem' -> 'brocards-problem', matching how the files are named."""
+    return re.sub(r"[^a-z0-9]+", "-", name.lower().replace("'", "")).strip("-")
+
+
 def intro_for(spec, name):
-    path = Path(spec["intro"]) if "intro" in spec else INTRO_DIR / f"{name}.md"
-    if not path.is_absolute():
-        path = ROOT / path
-    if path.is_file():
-        return path.read_text(encoding="utf-8").strip("\n")
+    """Section blurb, written here rather than scraped from the source repo.
+
+    Tried in order: an explicit `intro` path, then the display name, then its
+    slug — so renaming a source to "Minas Tarwon" still finds minas-tarwon.md.
+    """
     if "intro" in spec:
+        path = Path(spec["intro"])
+        if not path.is_absolute():
+            path = ROOT / path
+        if path.is_file():
+            return path.read_text(encoding="utf-8").strip("\n"), path
         warn(f"{name}: intro not found at {path}")
-    return ""
+        return "", None
+
+    for candidate in (INTRO_DIR / f"{name}.md", INTRO_DIR / f"{slugify(name)}.md"):
+        if candidate.is_file():
+            return candidate.read_text(encoding="utf-8").strip("\n"), candidate
+    return "", None
 
 
 def clean():
@@ -250,7 +266,10 @@ def build(spec, index, prefer):
         warn(f"{name}: no dated entries in {where}; skipped")
         return 0
 
-    out = LOG_DIR / name
+    # Directory (and therefore URL) is a slug; `name` is free to be a display
+    # string with spaces and punctuation, which would otherwise end up
+    # percent-encoded in the path.
+    out = LOG_DIR / spec.get("slug", slugify(name))
     out.mkdir(parents=True, exist_ok=True)
 
     front = [
@@ -261,18 +280,19 @@ def build(spec, index, prefer):
     ]
     if "weight" in spec:
         front.append(f"weight = {spec['weight']}")
+    intro, intro_path = intro_for(spec, name)
     front += ["", "[extra]", "titles_are_dates = true", "calendar = true"]
     if spec.get("section"):
         front.append(f'section = "{spec["section"]}"')
-    front += ["+++", "",
-              intro_for(spec, name), ""]
+    front += ["+++", "", intro, ""]
     (out / "_index.md").write_text("\n".join(front), encoding="utf-8")
 
     for iso, title, label, times in entries:
         stem = re.sub(r"[^\w.-]+", "-", title.split()[0]) if title.split() else iso
         (out / f"{stem}.md").write_text(render(iso, title, label, times), encoding="utf-8")
 
-    print(f"build-logs: {name} -> {len(entries)} entries from {where}")
+    note = f", intro {intro_path.name}" if intro_path else ", no intro"
+    print(f"build-logs: {name} -> {len(entries)} entries from {where}{note}")
     return len(entries)
 
 
