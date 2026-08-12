@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+<article>
+  {{ section.content | safe }}
+
+  {# Driven by [[extra.papers]] in config.toml; add an entry there to list one. #}
+  <ul class="papers">
+    {% for paper in config.extra.papers %}
+    <li>
+      <a href="{{ get_url(path=paper.file) }}">{{ paper.title }}</a>
+      <span class="paper-meta">
+        {{ paper.problem }}{% if paper.note %}, {{ paper.note }}{% endif %}{% if paper.doi %},
+        <a href="{{ paper.doi | safe }}">as published</a>{% endif %}
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+</article>
+{% endblock %}

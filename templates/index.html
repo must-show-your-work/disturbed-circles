@@ -5,17 +5,82 @@
   {{ section.content | safe }}
 </section>
 
+{# One quote per file in content/quotes/; all are rendered and the browser
+   reveals one at random on load. Without JS the first stays visible. #}
+{% if section.extra.quotes | default(value=false) %}
+{% set quotes = get_section(path="quotes/_index.md") %}
+<div class="quotes">
+  {% for quote in quotes.pages %}
+  <blockquote class="quote">{{ quote.content | safe }}</blockquote>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# A section with no pages of its own but `calendar` set aggregates its
+   children: the day links are emitted hidden purely to feed the graph. #}
+{% if section.subsections and section.extra.calendar | default(value=false) %}
+<div class="log-calendar" data-caption="{{ section.extra.calendar_caption | default(value=true) }}"></div>
+<div class="day-source" hidden>
+  {% for path in section.subsections %}
+  {% set sub = get_section(path=path) %}
+  {% for page in sub.pages %}
+  <a class="day" href="{{ page.permalink }}"
+     data-date="{{ page.date }}"
+     data-times="{{ page.content | split(pat='<h2') | length - 1 }}"
+     data-source="{{ sub.title }}"
+     title="{{ page.title }}"></a>
+  {% endfor %}
+  {% endfor %}
+</div>
+{% endif %}
+
 {% if section.pages %}
+{% set months = ["", "January", "February", "March", "April", "May", "June",
+                 "July", "August", "September", "October", "November", "December"] %}
+
+{% if section.extra.calendar | default(value=false) %}
+<div class="log-calendar" data-caption="{{ section.extra.calendar_caption | default(value=true) }}"></div>
+
+{% set_global seen = "" %}
+<div class="daygrid">
+  {% for page in section.pages %}
+  {% set stamp = page.year ~ "-" ~ page.month %}
+  {% if stamp != seen %}
+    {% if not loop.first %}</div></div>{% endif %}
+    <div class="month-group">
+      <h3 class="month">{{ months | nth(n=page.month) }} {{ page.year }}</h3>
+      <div class="days">
+    {% set_global seen = stamp %}
+  {% endif %}
+  <a class="day" href="{{ page.permalink }}"
+     data-date="{{ page.date }}"
+     data-times="{{ page.content | split(pat='<h2') | length - 1 }}"
+     title="{{ page.title }}">
+    <span class="num">{{ page.day }}</span>{% if page.extra.label %}<span class="label">{{ page.extra.label }}</span>{% endif %}
+  </a>
+  {% endfor %}
+    </div></div>
+</div>
+
+{% else %}
+{% set_global seen = "" %}
 <ul class="post-list">
   {% for page in section.pages %}
+  {% if page.date %}
+  {% set stamp = page.year ~ "-" ~ page.month %}
+  {% if stamp != seen %}
+  <li class="month">{{ months | nth(n=page.month) }} {{ page.year }}</li>
+  {% set_global seen = stamp %}
+  {% endif %}
+  {% endif %}
   <li>
     <a href="{{ page.permalink }}">{{ page.title }}</a>
-    {# Sections whose entries are titled by date suppress the redundant stamp. #}
-    {% if page.date and not section.extra.titles_are_dates | default(value=false) %}
+    {% if page.date %}
     <time datetime="{{ page.date }}">{{ page.date | date(format="%Y-%m-%d") }}</time>
     {% endif %}
   </li>
   {% endfor %}
 </ul>
+{% endif %}
 {% endif %}
 {% endblock %}

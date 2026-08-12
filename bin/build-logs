@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+"""Turn other repos' LOG.md files into ephemeral Zola pages under content/log/.
+
+The logs live canonically in their own repos; nothing here is committed. Each
+configured source becomes a section, and each dated entry becomes a page:
+
+    .build/logs/<name>/_index.md          section
+    .build/logs/<name>/15-NOV-2024.md     one page per date
+
+bin/stage-site then assembles these with the real content/ into a build root,
+so generated pages never land in the tree you write by hand.
+
+Configured by [[extra.logs]] in config.toml. A source may give `path`, `repo`,
+or both; --prefer decides which is tried first and the other is the fallback.
+
+    [[extra.logs]]
+    name   = "some-repo"        # section slug -> /log/some-repo/
+    path   = "../some-repo"     # a local checkout, relative or absolute
+    repo   = "owner/name"       # fetch LOG.md from GitHub
+    url    = "https://…/LOG.md" # or fetch a raw URL directly
+    branch = "main"             # with `repo`; tries main then master
+    file   = "LOG.md"           # defaults to LOG.md
+    title  = "some-repo"        # defaults to name
+    section = "Projects"        # optional heading to group under in the nav
+    intro  = "log-intros/x.md"  # defaults to log-intros/<name>.md if present
+    weight = 10                 # orders sections in the nav
+
+Set GITHUB_TOKEN to reach private repos.
+
+Expected shape is `# DD-MMM-YYYY` date headers with `## HHMM` times under them,
+either of which may carry trailing text (`# 15-NOV-2024 - pgn`). The parser is
+deliberately liberal: anything it doesn't recognise is left alone as body text
+rather than dropped, and it never raises, so a malformed log can't take the
+site build down.
+"""
+
+import argparse
+import os
+import re
+import shutil
+import sys
+import tomllib
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+LOG_DIR = ROOT / ".build" / "logs"
+INTRO_DIR = ROOT / "log-intros"
+
+TIMEOUT = 15
+
+FENCE = re.compile(r"^\s*(```|~~~)")
+MONTHS = {m: i for i, m in enumerate(
+    "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split(), start=1)}
+
+# A date header is `# DD-MMM-YYYY`, plus whatever else is on the line.
+DATE_H = re.compile(r"^#\s+(\d{1,2})-([A-Za-z]{3})-(\d{4})\b(.*)$")
+# A time header is `## HHMM` or `## HH:MM`, plus whatever else is on the line.
+TIME_H = re.compile(r"^##\s+(\d{1,2}:\d{2}|\d{3,4})\b(.*)$")
+
+
+def warn(msg):
+    print(f"build-logs: {msg}", file=sys.stderr)
+
+
+def to_iso(day, mon, year):
+    month = MONTHS.get(mon.upper())
+    if month is None or not 1 <= int(day) <= 31:
+        return None
+    return f"{year}-{month:02d}-{int(day):02d}"
+
+
+def parse_log(text, source):
+    """-> [(iso_date, title, [(time_heading, body_lines), ...]), ...] in file order.
+
+    Headers that don't look like a date (or a time) are left in the body rather
+    than treated as structure, so an unrecognised `#` line can't orphan the
+    prose that follows it.
+    """
+    entries, order = {}, []
+    times = body = None
+    fenced = False
+    repeats, preamble = [], 0
+
+    for raw in text.split("\n"):
+        if FENCE.match(raw):
+            fenced = not fenced
+            if body is not None:
+                body.append(raw)
+            continue
+
+        if not fenced:
+            m = DATE_H.match(raw)
+            if m:
+                day, mon, year, rest = m.groups()
+                iso = to_iso(day, mon, year)
+                if iso:
+                    title = raw.lstrip("#").strip()
+                    note = rest.strip().lstrip("-\u2013\u2014:\u00b7").strip()
+                    if iso not in entries:
+                        entries[iso] = {"title": title, "label": note, "times": []}
+                        order.append(iso)
+                    else:
+                        repeats.append(iso)
+                    times = entries[iso]["times"]
+                    body = []
+                    times.append((None, body))
+                    continue
+                # not a real date after all, so fall through and keep it as text
+
+            m = TIME_H.match(raw)
+            if m and times is not None:
+                body = []
+                times.append((raw.lstrip("#").strip(), body))
+                continue
+
+        if body is not None:
+            body.append(raw)
+        elif raw.strip():
+            preamble += 1
+
+    if preamble:
+        warn(f"{source}: {preamble} line(s) before the first date header were dropped")
+    if repeats:
+        warn(f"{source}: repeated date(s), merged: " + ", ".join(sorted(set(repeats))))
+
+    return [(iso, entries[iso]["title"], entries[iso]["label"], entries[iso]["times"])
+            for iso in order]
+
+
+def render(iso, title, label, times):
+    # No entry count here: templates/index.html derives it by counting rendered
+    # `<h2` in the page, which works for hand-written sections too.
+    out = ["+++", f'title = "{title}"', f"date = {iso}"]
+    if label:
+        out += ["", "[extra]", f'label = "{label}"']
+    out += ["+++", ""]
+    for heading, body in times:
+        text = "\n".join(body).strip("\n")
+        if heading is None and not text:
+            continue
+        if heading is not None:
+            out += [f"## {heading}", ""]
+        if text:
+            out += [text, ""]
+    return "\n".join(out).rstrip("\n") + "\n"
+
+
+def fetch(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "build-logs"})
+    token = os.environ.get("GITHUB_TOKEN")
+    if token and "githubusercontent.com" in url:
+        req.add_header("Authorization", f"Bearer {token}")
+    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+        return resp.read().decode("utf-8")
+
+
+def from_path(spec, fname):
+    if "path" not in spec:
+        return None, None
+    src = Path(spec["path"]).expanduser()
+    if not src.is_absolute():
+        src = (ROOT / src).resolve()
+    log = src / fname
+    if not log.is_file():
+        return None, f"no log at {log}"
+    return log.read_text(encoding="utf-8"), str(log)
+
+
+def from_remote(spec, fname):
+    if "url" in spec:
+        urls = [spec["url"]]
+    elif "repo" in spec:
+        branches = [spec["branch"]] if "branch" in spec else ["main", "master"]
+        urls = [f"https://raw.githubusercontent.com/{spec['repo']}/{b}/{fname}"
+                for b in branches]
+    else:
+        return None, None
+
+    problems = []
+    for url in urls:
+        try:
+            return fetch(url), url
+        except urllib.error.HTTPError as exc:
+            problems.append(f"HTTP {exc.code} for {url}")
+        except Exception as exc:
+            problems.append(f"{exc.__class__.__name__} for {url}: {exc}")
+    return None, "; ".join(problems)
+
+
+def read_source(spec, name, prefer="path"):
+    """-> (text, where) on success, or (None, reason).
+
+    A source may give both `path` and `repo`. Locally the checkout wins, since
+    it shows work that isn't pushed yet; in CI there are no sibling checkouts,
+    so the repo does. Either way the other is tried as a fallback.
+    """
+    fname = spec.get("file", "LOG.md")
+    order = ([from_remote, from_path] if prefer == "repo"
+             else [from_path, from_remote])
+
+    problems = []
+    for reader in order:
+        text, where = reader(spec, fname)
+        if text is not None:
+            return text, where
+        if where:
+            problems.append(where)
+
+    return None, "; ".join(problems) or "no `path`, `repo`, or `url`"
+
+
+def intro_for(spec, name):
+    path = Path(spec["intro"]) if "intro" in spec else INTRO_DIR / f"{name}.md"
+    if not path.is_absolute():
+        path = ROOT / path
+    if path.is_file():
+        return path.read_text(encoding="utf-8").strip("\n")
+    if "intro" in spec:
+        warn(f"{name}: intro not found at {path}")
+    return ""
+
+
+def clean():
+    """LOG_DIR holds nothing but generated output, so it is rebuilt wholesale."""
+    if LOG_DIR.is_dir():
+        shutil.rmtree(LOG_DIR)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def build(spec, index, prefer):
+    name = spec.get("name")
+    if not name:
+        warn(f"entry {index} has no `name`; skipped")
+        return 0
+
+    text, where = read_source(spec, name, prefer)
+    if text is None:
+        warn(f"{name}: {where}; skipped")
+        return 0
+
+    try:
+        entries = parse_log(text, name)
+    except Exception as exc:
+        warn(f"{name}: parse failed ({exc.__class__.__name__}: {exc}); skipped")
+        return 0
+
+    if not entries:
+        warn(f"{name}: no dated entries in {where}; skipped")
+        return 0
+
+    out = LOG_DIR / name
+    out.mkdir(parents=True, exist_ok=True)
+
+    front = [
+        "+++",
+        f'title = "{spec.get("title", name)}"',
+        'sort_by = "date"',
+        'template = "index.html"',
+    ]
+    if "weight" in spec:
+        front.append(f"weight = {spec['weight']}")
+    front += ["", "[extra]", "titles_are_dates = true", "calendar = true"]
+    if spec.get("section"):
+        front.append(f'section = "{spec["section"]}"')
+    front += ["+++", "",
+              intro_for(spec, name), ""]
+    (out / "_index.md").write_text("\n".join(front), encoding="utf-8")
+
+    for iso, title, label, times in entries:
+        stem = re.sub(r"[^\w.-]+", "-", title.split()[0]) if title.split() else iso
+        (out / f"{stem}.md").write_text(render(iso, title, label, times), encoding="utf-8")
+
+    print(f"build-logs: {name} -> {len(entries)} entries from {where}")
+    return len(entries)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser.add_argument("--prefer", choices=("path", "repo"), default="path",
+                        help="which source to try first when both are given "
+                             "(default: path, for local checkouts; CI wants repo)")
+    prefer = parser.parse_args().prefer
+
+    try:
+        config = tomllib.loads((ROOT / "config.toml").read_text(encoding="utf-8"))
+    except Exception as exc:
+        warn(f"could not read config.toml ({exc}); nothing to do")
+        return 0
+
+    specs = config.get("extra", {}).get("logs", [])
+
+    seen = {}
+    for spec in specs:
+        name = spec.get("name")
+        if name:
+            seen[name] = seen.get(name, 0) + 1
+    for name, n in seen.items():
+        if n > 1:
+            warn(f"{name!r} is used by {n} sources; they will overwrite each "
+                 f"other in one section. Give each a unique `name` and group "
+                 f"them with `section`.")
+
+    clean()
+
+    if not specs:
+        print("build-logs: no [[extra.logs]] configured")
+        return 0
+
+    total = sum(build(spec, i, prefer) for i, spec in enumerate(specs))
+    print(f"build-logs: {total} page(s) from {len(specs)} source(s)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

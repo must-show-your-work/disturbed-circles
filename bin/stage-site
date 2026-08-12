@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Assemble .build/site, the root zola actually builds from.
+
+Generated pages must not land in content/, which is the tree written by hand.
+So the build root is a staging directory that symlinks the real project in and
+overlays the generated log sections from .build/logs:
+
+    .build/site/config.toml -> ../../config.toml
+    .build/site/templates   -> ../../templates
+    .build/site/content/log/disturbed-circles -> ../../../../content/log/...
+    .build/site/content/log/hazel             -> ../../../logs/hazel
+
+Everything is a symlink, so edits to the real tree are live and nothing is
+copied. Only content/log/ is assembled entry by entry, because it is the one
+directory that mixes written and generated sections.
+
+This runs *in place*: links already pointing at the right target are left
+alone, stale ones are pruned, and .build/site/public is never touched. A
+running `zola serve` writes its compiled CSS there, and wiping the tree from
+under it would leave the site up but serving 404s for every asset.
+"""
+
+import os
+import shutil
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+BUILD = ROOT / ".build"
+LOGS = BUILD / "logs"
+SITE = BUILD / "site"
+
+# Linked wholesale; zola reads these and none of them are ever generated.
+TOP = ["config.toml", "templates", "sass", "static", "themes"]
+
+# zola serve's output directory. Ours to create, never ours to delete.
+KEEP = {"public"}
+
+
+def link(target: Path, name: Path):
+    """Point `name` at `target`, leaving it alone if it already does."""
+    name.parent.mkdir(parents=True, exist_ok=True)
+    rel = os.path.relpath(target, name.parent)
+    if name.is_symlink():
+        if os.readlink(name) == rel:
+            return
+        name.unlink()
+    elif name.exists():
+        shutil.rmtree(name) if name.is_dir() else name.unlink()
+    name.symlink_to(rel)
+
+
+def prune(directory: Path, keep: set):
+    """Drop entries that are no longer staged, so removals propagate."""
+    if not directory.is_dir():
+        return
+    for child in directory.iterdir():
+        if child.name in keep or child.name in KEEP:
+            continue
+        shutil.rmtree(child) if child.is_dir() and not child.is_symlink() else child.unlink()
+
+
+def main():
+    SITE.mkdir(parents=True, exist_ok=True)
+
+    top = set()
+    for entry in TOP:
+        src = ROOT / entry
+        if src.exists():
+            link(src, SITE / entry)
+            top.add(entry)
+    prune(SITE, top | {"content"})
+
+    # content/, minus log/ which needs merging
+    staged = set()
+    for child in sorted((ROOT / "content").iterdir()):
+        if child.name != "log":
+            link(child, SITE / "content" / child.name)
+            staged.add(child.name)
+    prune(SITE / "content", staged | {"log"})
+
+    log_out = SITE / "content" / "log"
+    log_out.mkdir(parents=True, exist_ok=True)
+
+    sections = set()
+    written = ROOT / "content" / "log"
+    if written.is_dir():
+        for child in sorted(written.iterdir()):
+            link(child, log_out / child.name)
+            sections.add(child.name)
+
+    generated = 0
+    if LOGS.is_dir():
+        for child in sorted(LOGS.iterdir()):
+            if child.is_dir():
+                link(child, log_out / child.name)
+                sections.add(child.name)
+                generated += 1
+    prune(log_out, sections)
+
+    print(f"stage-site: {SITE.relative_to(ROOT)} ready ({generated} generated section(s))")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

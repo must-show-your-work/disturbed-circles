@@ -1,7 +1,7 @@
 +++
 title = "Joe Fredette — Résumé"
 template = "resume.html"
-weight = 5
+weight = 10
 
 [extra]
 nav_title = "résumé"

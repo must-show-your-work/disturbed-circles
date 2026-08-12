@@ -5,12 +5,13 @@ too. You should tell 'em about me.
 
 -->
 <header class="masthead">
-    <h1>Joe <span class="nickname">&lsquo;Oz&rsquo;</span> Fredette</h1>
+    <h1><a href="https://disturbed-circles.com/about/resume">Joe <span class="nickname">&lsquo;Oz<!-- as in, 'Wizard of'-->&rsquo;</span> Fredette</a></h1>
     <p class="tagline">Infrastructure &amp; Platform Engineer</p>
     <ul class="contact">
         <li><a href="mailto:jfredett@gmail.com">jfredett@gmail.com</a></li>
         <li>Gardner, MA &middot; Remote</li>
         <li><a href="https://github.com/jfredett">github.com/jfredett</a></li>
+        <li class="canonical"><a href="https://disturbed-circles.com/about/resume">disturbed-circles.com/about/resume</a></li>
     </ul>
 </header>
 
@@ -55,10 +56,9 @@ too. You should tell 'em about me.
             <span class="where">Remote</span>
         </div>
         <p class="role-intro">
-            Hired to write code. A turnover of the IT department (five departures, three arrivals; I was the
-            second) left the whole architecture without an owner: Zelta, plus the legacy systems around it. I
-            inherited it, sunset the legacy estate, and have kept Zelta running through every infrastructure
-            generation since.
+            Hired to write code. A turnover of the IT department (five departures, three arrivals; I was the second) left the whole
+            JVM-and-Ruby architecture without an owner: Zelta, plus the legacy systems around it. I inherited it, sunset the legacy
+            estate, and have kept Zelta running through every infrastructure generation since.
         </p>
         <ul>
             <li>
@@ -179,8 +179,8 @@ too. You should tell 'em about me.
 <section>
     <h2>Tools</h2>
     <dl class="skills">
-        <dt>Languages</dt>
-        <dd>Rust, Ruby, Python, Lean 4, Nix, JavaScript/TypeScript, Scala, Java, Haskell</dd>
+        <dt>Languages and Ecosystems</dt>
+        <dd>Rust, Ruby, Python, Lean 4, Nix, JavaScript/TypeScript, Haskell, JVM</dd>
         <dt>Azure</dt>
         <dd>Azure AKS, Bicep, Azure Monitor / Log Analytics, Managed Prometheus, Azure Firewall, managed Oracle &amp; PostgreSQL</dd>
         <dt>Platform</dt>
@@ -229,7 +229,7 @@ too. You should tell 'em about me.
             href="https://maa.tandfonline.com/journals/umma20">Mathematics Magazine</a></em>: <em><a
             href="https://doi.org/10.4169/002557009X478445">Right Prime Rings (#1810)</a> and <a
             href="https://doi.org/10.4169/mathmaga.83.1.66a">Wiener Indices of Certain Graphs (#1811)</a> <!-- they
-            actually spelled my name wrong in this one! --></em>.
+            actually spelled my name wrong in this one! --></em>.<a href="#fn4" id="fnref4" class="fnref">4</a>
         </li>
     </ul>
 </section>
@@ -261,6 +261,25 @@ too. You should tell 'em about me.
     <p id="fn3"><a href="#fnref3" class="fnnum">3</a> Ask me how abstract algebra resolved a
         longstanding ambiguity that was blocking development -- a good story, too long
         for the margin of this resume.</p>
+    <p id="fn4"><a href="#fnref4" class="fnnum">4</a>
+        The magazine credits solves, not papers. Submissions as written:
+        <a href="{{ get_url(path='papers/right-prime-rings-1810.pdf') }}">#1810</a> (with M. Winders, and thus a "weak"
+        Erd&odblac;s number = 4), <!--
+        Define a "Weak" Erdős number as the length of a path of _any_ shared mathematical publication between Paul Erdős
+        and another individual. MathSciNet puts Winders at 3:
+
+        Winders, Michael -MR2462381- Anderson, Daniel D. -MR0643302- Boals, Alfred J. -MR0944683- Erdős, Paul
+        https://mathscinet.ams.org/mathscinet/freetools/collab-dist?source=854452&target=189017
+
+        plus {{ get_url(path='papers/right-prime-rings-1810.pdf') }}
+
+        gets me a weak number of 4. [/]
+
+        Define a "very" weak Erdős number as the length of a path of _any_ document of any kind between an
+        individual and Paul Erdős. An offer letter could net you a VWEN of 5.
+        -->
+        <a href="{{ get_url(path='papers/wiener-indices-1811.pdf') }}">#1811</a>.
+    </p>
 </footer>
 
 

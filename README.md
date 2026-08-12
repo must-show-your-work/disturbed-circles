@@ -75,6 +75,39 @@ display:
 {% end %}
 ```
 
+**Hover-transorthography.** Any nav entry can rest in one script and reveal another on hover. Set both keys in a section's `_index.md`:
+
+```toml
+[extra]
+nav_alt   = "Οἱ κύκλοι μου"   # what it rests as
+nav_title = "Hoi kykloi mou"  # what hover reveals
+```
+
+Both spellings share one `inline-grid` cell, so the box takes the width of the wider and nothing shifts on the swap; only `nav_title` is exposed to assistive tech, and `prefers-reduced-motion` drops the transition. Omit `nav_alt` and the entry renders as plain text. Currently unused — `Οἱ κύκλοι μου` sits in `nav_title` alone.
+
+**The log** at `/log/` is a set of sections, one per source. Its own entries live in `content/log/disturbed-circles/`; other repos' `LOG.md` files are pulled in at build time by `bin/build-logs`, configured with `[[extra.logs]]` in `config.toml`:
+
+```toml
+[[extra.logs]]
+name   = "some-repo"        # section slug -> /log/some-repo/
+path   = "../some-repo"     # a local checkout, relative or absolute
+repo   = "owner/name"       # or: fetch just LOG.md from GitHub
+url    = "https://…/LOG.md" # or: fetch a raw URL directly
+branch = "main"             # with `repo`; tries main then master
+file   = "LOG.md"
+title  = "some-repo"
+intro  = "log-intros/x.md"  # defaults to log-intros/<name>.md
+weight = 10
+```
+
+Give exactly one of `path`, `repo`, or `url`. `repo` fetches only the one file, not a clone. Set `GITHUB_TOKEN` to reach private repos.
+
+Each section's blurb comes from `log-intros/<name>.md` — written and committed here, not scraped from the source repo's README.
+
+Generated pages are **never committed**: each generated directory gets a `.gitignore` containing `*`, so it ignores itself and the root `.gitignore` never has to guess which directories under `content/log/` are yours. A `.generated` marker lets a rebuild clean up after itself without touching anything hand-written.
+
+Expected shape is `# DD-MMM-YYYY` date headers with `## HHMM` times beneath, either of which may carry trailing text (`# 15-NOV-2024 - pgn`, `## 2201 - movegen-v2`). The parser is deliberately liberal and never raises: fenced code is respected, headers it doesn't recognise stay in the body rather than breaking the section, same-date entries merge, and any failure degrades to a warning so a malformed log can't take the build down.
+
 **The résumé** is hand-authored HTML, not markdown. The single source is `templates/partials/resume.html` — a body fragment with semantic classes and no Tera in it; edit it as plain HTML. It is rendered twice:
 
 - `templates/resume.html` → `/resume/`, inside the normal site chrome. Styled by the `.resume` block in `main.scss`.

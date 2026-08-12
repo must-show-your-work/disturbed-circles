@@ -1,12 +1,41 @@
 import { mount } from 'svelte';
 import renderMathInElement from 'katex/contrib/auto-render';
 import 'katex/dist/katex.min.css';
-import App from './App.svelte';
+import LogCalendar from './LogCalendar.svelte';
 
-const target = document.getElementById('svelte-root');
+// Log sections render their day links server-side; the calendar is built from
+// those, so it needs no data channel of its own and simply doesn't appear
+// where there are no dated entries.
+const calendar = document.querySelector<HTMLElement>('.log-calendar');
 
-if (target) {
-  mount(App, { target });
+if (calendar) {
+  const entries = [...document.querySelectorAll<HTMLAnchorElement>('a.day[data-date]')].map((a) => ({
+    date: a.dataset.date!,
+    times: Number(a.dataset.times) || 1,
+    href: a.href,
+    title: a.title || a.dataset.date!,
+    source: a.dataset.source
+  }));
+
+  if (entries.length) {
+    mount(LogCalendar, {
+      target: calendar,
+      props: { entries, caption: calendar.dataset.caption !== 'false' }
+    });
+  }
+}
+
+// One quote per file in content/quotes/, all rendered server-side; pick one to
+// show. Randomising here rather than at build time means it changes per visit
+// on a static site. Without JS the CSS leaves the first one visible.
+const quotes = document.querySelector<HTMLElement>('.quotes');
+
+if (quotes) {
+  const all = [...quotes.querySelectorAll<HTMLElement>('.quote')];
+  if (all.length) {
+    all[Math.floor(Math.random() * all.length)].classList.add('chosen');
+    quotes.classList.add('picked');
+  }
 }
 
 renderMathInElement(document.body, {

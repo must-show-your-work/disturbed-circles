@@ -131,7 +131,7 @@ To all the people who have endured my ramblings about mathematics
 
 To all the people who reminded me that I was actually pretty good at this throughout my life, when I didn't believe.
 
-And last and most, my wife, Sarah and my daughter, Julie.
+And last and most, my wife, The Mother of Mayhem; and to my daughter, Mayhem Herself.
 
 Thank you.
 

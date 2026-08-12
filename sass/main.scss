@@ -37,7 +37,7 @@ body {
 // keeps a wide <pre> or a long equation from stretching the grid track.
 .layout {
   display: grid;
-  grid-template-columns: 11rem minmax(0, $code-measure);
+  grid-template-columns: 13rem minmax(0, $code-measure);
   gap: 3.5rem;
   justify-content: center;
   align-items: start;
@@ -105,6 +105,40 @@ a {
     margin-top: 0.15rem;
   }
 
+  // Subsections of whichever section you are currently in.
+  nav .subnav {
+    margin: 0.15rem 0 0.4rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.82rem;
+
+    // Aligned with the child links below it, not with the parent above.
+    .subnav-label {
+      margin: 0.5rem 0 0.1rem;
+      // Matches the links' 2px rule plus their indent, so the first letters
+      // sit on the same column rather than 2px apart.
+      border-left: 2px solid transparent;
+      padding-left: 1.5rem;
+      color: $moss;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    li:first-child.subnav-label {
+      margin-top: 0.15rem;
+    }
+
+    a {
+      padding-left: 1.5rem;
+      border-left-color: transparent;
+    }
+
+    a[aria-current] {
+      border-left-color: $amber;
+    }
+  }
+
   nav a {
     display: block;
     padding: 0.2rem 0 0.2rem 0.7rem;
@@ -122,6 +156,38 @@ a {
       color: $goldenrod;
       border-left-color: $maple;
     }
+  }
+}
+
+// A label that rests in its own script and shows a transliteration on hover.
+// Both layers share one grid cell, so the box takes the width of the wider of
+// the two and nothing shifts on the swap. Only the roman form is exposed to
+// assistive tech.
+.nav-fade {
+  display: inline-grid;
+
+  .from,
+  .to {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+    transition: opacity 0.25s ease;
+  }
+
+  .to {
+    opacity: 0;
+  }
+}
+
+.sidebar nav a:hover .nav-fade,
+.sidebar nav a:focus-visible .nav-fade {
+  .from { opacity: 0; }
+  .to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-fade .from,
+  .nav-fade .to {
+    transition: none;
   }
 }
 
@@ -295,9 +361,57 @@ img {
   height: auto;
 }
 
+// Images get a consistent footprint rather than a consistent width: bounding
+// both axes means a 16:9 still and a 3:4 portrait occupy comparable screen
+// space instead of the portrait taking five times the height. The browser
+// shrinks to satisfy whichever bound binds first, so aspect ratio is kept and
+// nothing is cropped or letterboxed. vh caps stop a tall image dominating a
+// short viewport.
+$figure-w: 34rem;
+$figure-h: 22rem;
+
+main img {
+  display: block;
+  margin: 2rem auto;
+  max-width: min(100%, #{$figure-w});
+  max-height: min(#{$figure-h}, 60vh);
+  border-radius: 4px;
+}
+
+main figure {
+  margin: 2rem 0;
+  text-align: center;
+
+  img {
+    margin: 0 auto 0.5rem;
+  }
+
+  figcaption {
+    color: $lichen;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+}
+
 .post-list {
   list-style: none;
   padding: 0;
+
+  // Month separator emitted by index.html when the stamp changes.
+  li.month {
+    display: block;
+    border: 0;
+    margin-top: 1.75rem;
+    padding: 0 0 0.25rem;
+    color: $moss;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  li.month:first-child {
+    margin-top: 0;
+  }
 
   li {
     display: flex;
@@ -308,10 +422,256 @@ img {
     border-bottom: 1px solid $rule;
   }
 
-  time {
+  time,
+  .count {
     color: $lichen;
     font-size: 0.9rem;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Link lists on /about/: résumé links and the papers list.
+.links,
+.papers {
+  list-style: none;
+  padding: 0;
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.paper-meta {
+  display: block;
+  color: $lichen;
+  font-size: 0.9rem;
+}
+
+// Compact day grid for log sections whose titles are dates. Each month is a
+// label column plus a wrapped run of days, so a year of entries is a handful
+// of rows rather than a screenful of list items.
+.daygrid {
+  margin-top: 0.5rem;
+}
+
+.month-group {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 0.5rem 1.25rem;
+  align-items: baseline;
+  padding: 0.55rem 0;
+  border-top: 1px solid $rule;
+
+  // These headings are otherwise clamped to the prose measure by the rule in
+  // `main`, which would leave days flowing into the gap beside them.
+  .month {
+    max-width: none;
+    margin: 0;
+    color: $moss;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .day {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    min-width: 1.75rem;
+    justify-content: center;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid $rule;
+    border-radius: 3px;
+    color: $birch;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+
+    &:hover {
+      border-color: $amber;
+      color: $amber;
+    }
+
+    .label {
+      color: $lichen;
+      font-size: 0.78rem;
+    }
+
+    &:hover .label {
+      color: inherit;
+    }
+  }
+}
+
+@media (max-width: 42rem) {
+  .month-group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+}
+
+// Previous/next between entries in a date-sorted section. `next` is pushed
+// right so the pair reads as a timeline even when only one of them exists.
+.entry-nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid $rule;
+  max-width: $prose-measure;
+
+  a {
+    flex: 1 1 0;
+    min-width: 0;
+    text-decoration: none;
+  }
+
+  .next {
+    text-align: right;
+  }
+
+  .next:only-child {
+    margin-left: auto;
+  }
+
+  .dir {
+    display: block;
+    color: $moss;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .what {
+    display: block;
+    color: $maple;
+    font-size: 0.95rem;
+  }
+
+  a:hover .what {
+    color: $amber;
+  }
+}
+
+@media (max-width: 42rem) {
+  .entry-nav {
+    flex-direction: column;
+
+    .next {
+      text-align: left;
+    }
+  }
+}
+
+// Contribution graph, drawn by svelte/src/LogCalendar.svelte.
+.cal {
+  margin: 0 0 1.5rem;
+
+  .cal-years {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .cal-years button {
+    padding: 0.15rem 0.6rem;
+    border: 1px solid $rule;
+    border-radius: 3px;
+    background: none;
+    color: $lichen;
+    font: inherit;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $amber;
+      color: $amber;
+    }
+
+    &[aria-pressed="true"] {
+      border-color: $maple;
+      color: $goldenrod;
+    }
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  // One faint outline per month, hugging the gutter between cells.
+  .cal-cartouche {
+    fill: none;
+    stroke: $rule;
+    stroke-width: 1;
+  }
+
+  rect.off {
+    fill: $duff;
+  }
+
+  rect.on {
+    cursor: pointer;
+  }
+
+  // Four steps from a single note to a full day, warm end of the palette.
+  rect.l1 { fill: rgba($maple, 0.35); }
+  rect.l2 { fill: rgba($maple, 0.6); }
+  rect.l3 { fill: $maple; }
+  rect.l4 { fill: $amber; }
+
+  a:hover rect.on {
+    stroke: $birch;
+    stroke-width: 1;
+  }
+
+  .cal-total {
+    margin-top: 0.4rem;
+    color: $lichen;
+    font-size: 0.85rem;
+  }
+}
+
+// Landing-page quotes. Every quote is in the markup; the first is shown by
+// default so the page still reads without JS, and main.ts then reveals one at
+// random instead.
+.quotes {
+  margin: 0;
+
+  .quote ~ .quote {
+    display: none;
+  }
+
+  &.picked .quote {
+    display: none;
+  }
+
+  &.picked .quote.chosen {
+    display: block;
+  }
+}
+
+.quote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: $birch;
+  font-style: italic;
+
+  a {
+    font-style: normal;
   }
 }
 
@@ -334,6 +694,14 @@ img {
       font-size: 2rem;
       font-weight: 600;
       color: $maple;
+
+      // The name is an anchor so the PDF can link back to this page. Here
+      // that link points at the page you are already on, so render it inert.
+      a {
+        color: inherit;
+        text-decoration: none;
+        pointer-events: none;
+      }
     }
 
     .nickname {
@@ -355,6 +723,12 @@ img {
       list-style: none;
       font-size: 0.95rem;
       color: $lichen;
+    }
+
+    // The canonical URL exists for the PDF, where a link on the name is
+    // invisible once printed. On the page you are already here.
+    .contact .canonical {
+      display: none;
     }
   }
 

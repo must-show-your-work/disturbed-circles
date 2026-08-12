@@ -3,9 +3,7 @@
 {% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
 
 {% block content %}
-{# The nearest enclosing section decides whether the date is worth printing:
-   in lab-journal the title *is* the date, so repeating it is noise. #}
-{% set parent = get_section(path=page.ancestors | last, metadata_only=true) %}
+{% set parent = get_section(path=page.ancestors | last) %}
 <article>
   <h2>{{ page.title }}</h2>
   {% if page.date and not parent.extra.titles_are_dates | default(value=false) %}
@@ -13,4 +11,32 @@
   {% endif %}
   {{ page.content | safe }}
 </article>
+
+{# zola's page.earlier/page.later come back empty here, so the neighbours are
+   found by position in the parent section instead. Sections sort newest-first,
+   so the preceding index is the later entry. #}
+{% set siblings = parent.pages %}
+{% set_global idx = -1 %}
+{% for sibling in siblings %}
+  {% if sibling.permalink == page.permalink %}{% set_global idx = loop.index0 %}{% endif %}
+{% endfor %}
+
+{% if idx >= 0 and siblings | length > 1 %}
+<nav class="entry-nav">
+  {% if idx + 1 < siblings | length %}
+  {% set older = siblings | nth(n=idx + 1) %}
+  <a class="prev" href="{{ older.permalink }}">
+    <span class="dir">previous</span>
+    <span class="what">{{ older.title }}</span>
+  </a>
+  {% endif %}
+  {% if idx > 0 %}
+  {% set newer = siblings | nth(n=idx - 1) %}
+  <a class="next" href="{{ newer.permalink }}">
+    <span class="dir">next</span>
+    <span class="what">{{ newer.title }}</span>
+  </a>
+  {% endif %}
+</nav>
+{% endif %}
 {% endblock %}

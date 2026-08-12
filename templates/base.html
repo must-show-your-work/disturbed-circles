@@ -18,20 +18,54 @@
   <div class="layout">
     <aside class="sidebar">
       <a class="brand" href="{{ config.base_url }}">{{ config.title }}</a>
-      {# Nav is derived from the top-level sections, ordered by each one's
-         `weight`, so a new content/<name>/_index.md shows up here on its own.
-         `extra.nav_title` overrides the (long) page title for the link text. #}
       <nav>
         {% set root = get_section(path="_index.md") %}
         <ul>
           {% for path in root.subsections %}
-          {% set s = get_section(path=path, metadata_only=true) %}
+          {% set s = get_section(path=path) %}
+          {% if not s.extra.nav_hide | default(value=false) %}
+          {% set here = current_path is starting_with(s.path) %}
           <li>
-            <a href="{{ s.permalink }}"
-               {% if current_path is starting_with(s.path) %}aria-current="true"{% endif %}>
-              {{ s.extra.nav_title | default(value=s.title) }}
+            <a href="{{ s.permalink }}"{% if here %} aria-current="true"{% endif %}>
+              {% if s.extra.nav_title %}{{ s.extra.nav_title }}{% else %}{{ s.title }}{% endif %}
             </a>
+            {% if here and s.subsections %}
+            {# Grouped by each child's `extra.section`. Collect the labels in
+               weight order first, then emit each group, so the grouping does
+               not depend on same-section children happening to be adjacent. #}
+            {% set hide_empty = s.extra.hide_empty | default(value=false) %}
+            {% set_global shown = [] %}
+            {% set_global groups = [] %}
+            {% for child in s.subsections %}
+              {% set c = get_section(path=child) %}
+              {% if not hide_empty or c.pages | length > 0 %}
+                {% set_global shown = shown | concat(with=child) %}
+                {% set label = c.extra.section | default(value="") %}
+                {% if label not in groups %}{% set_global groups = groups | concat(with=label) %}{% endif %}
+              {% endif %}
+            {% endfor %}
+            <ul class="subnav">
+              {% for label in groups %}
+              {% if label %}<li class="subnav-label">{{ label }}</li>{% endif %}
+              {% for child in shown %}
+              {% set c = get_section(path=child) %}
+              {% if c.extra.section | default(value="") == label %}
+              <li>
+                <a href="{{ c.permalink }}"{% if current_path is starting_with(c.path) %} aria-current="true"{% endif %}>
+                  {%- if c.extra.nav_alt -%}
+                  <span class="nav-fade"><span class="from" aria-hidden="true">{{ c.extra.nav_alt }}</span><span class="to">{% if c.extra.nav_title %}{{ c.extra.nav_title }}{% else %}{{ c.title }}{% endif %}</span></span>
+                  {%- else -%}
+                  {% if c.extra.nav_title %}{{ c.extra.nav_title }}{% else %}{{ c.title }}{% endif %}
+                  {%- endif -%}
+                </a>
+              </li>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+            </ul>
+            {% endif %}
           </li>
+          {% endif %}
           {% endfor %}
         </ul>
       </nav>
@@ -46,8 +80,6 @@
       </footer>
     </div>
   </div>
-  {# Carries the svelte mount and the KaTeX auto-render pass, so it must run
-     on every page, not just the section indices. #}
   <script type="module" src="{{ get_url(path="svelte/main.js") }}"></script>
   {% block scripts %}{% endblock %}
 </body>

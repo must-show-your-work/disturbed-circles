@@ -8,7 +8,7 @@
 
 @page {
   size: letter;
-  margin: 0.5in 0.6in;
+  margin: 0.45in 0.6in;
 }
 
 body {
@@ -36,6 +36,12 @@ a {
     font-weight: 600;
     letter-spacing: 0.01em;
     color: #7a3524;
+
+    // Clickable in the PDF, back to the web copy; styled as the heading.
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
   }
 
   .nickname {

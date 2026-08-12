@@ -9,28 +9,17 @@ feed_filenames = ["atom.xml"]
 
 [markdown]
 smart_punctuation = true
-# Collect footnotes into one section at the end of the article, wherever in
-# the source they were defined, and add a backlink to the reference.
+# loading="lazy" on images, so a slow or dead third-party host can't hold up
+# rendering the rest of the page.
+lazy_async_image = true
 bottom_footnotes = true
 
-# Zola 0.22+ highlights via giallo (not syntect); theme names and this table's
-# shape both differ from older docs you may find. gruvbox-dark-medium is the
-# warm-brown one, which sits closest to the site palette.
 [markdown.highlighting]
 theme = "gruvbox-dark-medium"
-# Emit classes into public/giallo.css rather than inline style attributes, so
-# main.css can restyle the listing (an inline background would need !important).
 style = "class"
 
 [extra]
-# Anchor for the computed "N years" figures on the résumé. 2011 = first
-# professional role (Vermonster); the summary counts from here. Rendered at
-# build time by templates/resume{,-print}.html and re-derived in the browser
-# on load by svelte/src/main.ts, so the web copy survives a New Year between
-# deploys. The PDF is fixed at `just pdf` time.
 career_start = 2011
-# Separate anchor: WWQI shipped in 2012, a year after the role started, so the
-# "still in active use N years later" figure counts from its own date.
 wwqi_built = 2012
 number_words = ["zero", "one", "two", "three", "four", "five", "six", "seven",
                 "eight", "nine", "ten", "eleven", "twelve", "thirteen",
@@ -38,3 +27,68 @@ number_words = ["zero", "one", "two", "three", "four", "five", "six", "seven",
                 "nineteen", "twenty", "twenty-one", "twenty-two",
                 "twenty-three", "twenty-four", "twenty-five", "twenty-six",
                 "twenty-seven", "twenty-eight", "twenty-nine", "thirty"]
+
+[[extra.papers]]
+title = "Right Prime Rings"
+problem = "#1810"
+file = "papers/right-prime-rings-1810.pdf"
+note = "with M. Winders"
+doi = "https://doi.org/10.4169/002557009X478445"
+
+[[extra.papers]]
+title = "Wiener Indices of Certain Graphs"
+problem = "#1811"
+file = "papers/wiener-indices-1811.pdf"
+doi = "https://doi.org/10.4169/mathmaga.83.1.66a"
+
+[[extra.logs]]
+name = "Hazel"
+repo = "jfredett/hazel"
+weight = 15
+section = "Code"
+
+[[extra.logs]]
+name = "Flaming Tongues Above"
+repo = "must-show-your-work/flaming-tongues-above"
+path = "../flaming-tongues-above"
+weight = 20
+section = "Math"
+
+# [[extra.logs]]
+# name = "Colors to the Chameleon"
+# # repo = "must-show-your-work/geometry-is-your-friend"
+# path = "../colors-to-the-chameleon"
+# weight = 30
+# section = "Math"
+
+[[extra.logs]]
+name = "High Tide"
+# repo = "must-show-your-work/geometry-is-your-friend"
+path = "../high-tide"
+weight = 10
+section = "Math"
+
+[[extra.logs]]
+name = "Geometry is your friend"
+repo = "must-show-your-work/geometry-is-your-friend"
+path = "../geometry-is-your-friend"
+weight = 10
+section = "Math"
+
+[[extra.logs]]
+name = "Minas Tarwon"
+repo = "jfredett/minas-tarwon"
+weight = 20
+section = "Ops"
+
+[[extra.logs]]
+name = "Brocard's Problem"
+repo = "jfredett/brocard"
+weight = 40
+section = "Math"
+
+[[extra.logs]]
+name = "Truncheon"
+repo = "jfredett/truncheon"
+weight = 30
+section = "Code"
