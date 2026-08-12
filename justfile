@@ -10,6 +10,9 @@ pdf: svelte logs stage
     zola --root .build/site build --output-dir public --force
     weasyprint -s public/resume-print.css public/about/resume/print/index.html static/resume.pdf
 
+check: stage
+    zola --root .build/site check
+
 logs:
     bin/build-logs --prefer "${LOGS_PREFER:-path}"
 

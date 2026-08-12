@@ -48,6 +48,24 @@ jobs:
         with:
           path: ./public
 
+  # External links rot for reasons outside this repo (a wiki reorganises, a host
+  # starts 403ing crawlers), and most of them live in log content pulled from
+  # other repos. Report them without letting them block a deploy.
+  links:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Check links
+        run: nix develop -c just check
+        env:
+          LOGS_PREFER: repo
+          GITHUB_TOKEN: ${{ secrets.LOG_SOURCES_TOKEN || secrets.GITHUB_TOKEN }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest

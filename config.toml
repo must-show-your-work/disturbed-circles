@@ -7,6 +7,25 @@ build_search_index = false
 generate_feeds = true
 feed_filenames = ["atom.xml"]
 
+# Broken *internal* links are ours and fail the build. External ones rot for
+# reasons we don't control, so `zola check` runs as a separate, non-blocking CI
+# job rather than gating a deploy.
+[link_checker]
+internal_level = "error"
+external_level = "warn"
+# Bot-hostile hosts: these 403 a checker while working fine in a browser.
+skip_prefixes = [
+  "https://stackoverflow.com/",
+  "https://www.tandfonline.com/",
+  "https://maa.tandfonline.com/",
+  "https://media2.giphy.com/",
+]
+# Wikis reorganise headings constantly; the page existing is what matters.
+skip_anchor_prefixes = [
+  "https://nixos.wiki/",
+  "https://en.wikipedia.org/",
+]
+
 [markdown]
 smart_punctuation = true
 # loading="lazy" on images, so a slow or dead third-party host can't hold up
