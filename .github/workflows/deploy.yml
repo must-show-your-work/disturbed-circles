@@ -28,8 +28,10 @@ jobs:
       # weasyprint separately. Pinning them twice is how CI ends up on a
       # different pnpm than the one the lockfile and pnpm-workspace.yaml were
       # written for. flake.nix is the single source of truth.
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
       # `just build` is exactly what runs locally: svelte -> logs -> stage ->
       # résumé PDF -> zola. LOGS_PREFER=repo because there are no sibling
