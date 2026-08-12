@@ -9,3 +9,5 @@ nav_title = "Οἱ κύκλοι μου"
 titles_are_dates = false
 calendar = true
 +++
+
+Watch your step, those circles on the floor aren't just for fun.
