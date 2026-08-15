@@ -5,6 +5,7 @@ template = "index.html"
 weight = 1
 
 [extra]
+section = "Circles"
 nav_title = "Οἱ κύκλοι μου"
 titles_are_dates = false
 calendar = true

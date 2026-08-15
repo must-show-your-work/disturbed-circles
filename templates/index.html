@@ -41,25 +41,56 @@
 {% if section.extra.calendar | default(value=false) %}
 <div class="log-calendar" data-caption="{{ section.extra.calendar_caption | default(value=true) }}"></div>
 
+{# Entries are grouped by date, not listed one per page: two entries on the
+   same day would otherwise render as two identical day chips. A day with
+   several entries becomes a <details> disclosure, which needs no JS. #}
 {% set_global seen = "" %}
+{% set_global done = [] %}
 <div class="daygrid">
   {% for page in section.pages %}
+  {% if page.date not in done %}
+  {% set_global done = done | concat(with=page.date) %}
+  {% set_global same = [] %}
+  {% for other in section.pages %}
+    {% if other.date == page.date %}{% set_global same = same | concat(with=other) %}{% endif %}
+  {% endfor %}
+
   {% set stamp = page.year ~ "-" ~ page.month %}
   {% if stamp != seen %}
-    {% if not loop.first %}</div></div>{% endif %}
+    {% if seen != "" %}</div></div>{% endif %}
     <div class="month-group">
       <h3 class="month">{{ months | nth(n=page.month) }} {{ page.year }}</h3>
       <div class="days">
     {% set_global seen = stamp %}
   {% endif %}
+
+  {% if same | length == 1 %}
   <a class="day" href="{{ page.permalink }}"
      data-date="{{ page.date }}"
      data-times="{{ page.content | split(pat='<h2') | length - 1 }}"
      title="{{ page.title }}">
     <span class="num">{{ page.day }}</span>{% if page.extra.label %}<span class="label">{{ page.extra.label }}</span>{% endif %}
   </a>
+  {% else %}
+  <details class="day-group">
+    <summary class="day">
+      <span class="num">{{ page.day }}</span><span class="more">{{ same | length }}</span>
+    </summary>
+    <ul class="day-menu">
+      {% for entry in same %}
+      <li>
+        <a href="{{ entry.permalink }}"
+           data-date="{{ entry.date }}"
+           data-times="{{ entry.content | split(pat='<h2') | length - 1 }}"
+           title="{{ entry.title }}">{{ entry.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+  {% endif %}
   {% endfor %}
-    </div></div>
+  {% if seen != "" %}</div></div>{% endif %}
 </div>
 
 {% else %}

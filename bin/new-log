@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Scaffold a locally-maintained log section under content/log/.
+
+    bin/new-log <slug> [title] [section]
+
+Logs kept in another repo are four lines of [[extra.logs]] in config.toml and
+don't come through here; this is for the ones written in this repo, which are
+otherwise a dozen lines of front matter to remember.
+
+Weight is the next free one within the section, so new entries land at the
+bottom of their group in the nav rather than jumbling the order.
+"""
+
+import re
+import sys
+import tomllib
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+LOG = ROOT / "content" / "log"
+
+
+def slugify(name):
+    return re.sub(r"[^a-z0-9]+", "-", name.lower().replace("'", "")).strip("-")
+
+
+def front_matter(path):
+    """Parse a section's TOML front matter, or {} if it has none."""
+    try:
+        text = path.read_text(encoding="utf-8")
+        return tomllib.loads(text.split("+++")[1])
+    except Exception:
+        return {}
+
+
+def existing():
+    """-> {section: [weight, ...]} across the hand-written log sections."""
+    found = {}
+    for d in LOG.iterdir():
+        if not d.is_dir():
+            continue
+        fm = front_matter(d / "_index.md")
+        name = fm.get("extra", {}).get("section")
+        if name:
+            found.setdefault(name, []).append(fm.get("weight", 0))
+    return found
+
+
+def next_weight(sections, section):
+    return max(sections.get(section, []), default=0) + 1
+
+
+def main(argv):
+    if not argv:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+
+    sections = existing()
+
+    slug = slugify(argv[0])
+    title = argv[1] if len(argv) > 1 else argv[0]
+    # Default to whichever category already holds the most sections rather than
+    # a hardcoded name, which goes stale the moment a category is renamed.
+    default = max(sections, key=lambda k: len(sections[k]), default="Circles")
+    section = argv[2] if len(argv) > 2 and argv[2] else default
+
+    if section not in sections:
+        print(f"new-log: '{section}' is a new category; existing ones are "
+              + ", ".join(sorted(sections)), file=sys.stderr)
+
+    out = LOG / slug
+    index = out / "_index.md"
+    if index.exists():
+        print(f"new-log: {index.relative_to(ROOT)} already exists; not touching it",
+              file=sys.stderr)
+        return 1
+
+    out.mkdir(parents=True, exist_ok=True)
+    index.write_text(
+        "+++\n"
+        f'title = "{title}"\n'
+        'sort_by = "date"\n'
+        'template = "index.html"\n'
+        f"weight = {next_weight(sections, section)}\n"
+        "\n"
+        "[extra]\n"
+        f'section = "{section}"\n'
+        f'nav_title = "{slug}"\n'
+        "titles_are_dates = false\n"
+        "calendar = true\n"
+        "+++\n",
+        encoding="utf-8",
+    )
+
+    print(f"new-log: {index.relative_to(ROOT)}")
+    print(f"         /log/{slug}/   nav '{slug}' under '{section}'")
+    print(f"         add entries as {out.relative_to(ROOT)}/<name>.md with a `date`")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

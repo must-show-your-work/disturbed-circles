@@ -378,6 +378,23 @@ main img {
   border-radius: 4px;
 }
 
+// Embedded video, from the youtube shortcode. Same bounds as an image so a
+// 16:9 embed and a 16:9 still occupy the same footprint.
+.video {
+  margin: 2rem auto;
+  max-width: min(100%, #{$figure-w});
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+
+  iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
 main figure {
   margin: 2rem 0;
   text-align: center;
@@ -507,6 +524,61 @@ main figure {
 
     &:hover .label {
       color: inherit;
+    }
+  }
+}
+
+// A day with several entries collapses to one chip that opens on click.
+// <details> gives that with no JS; the menu is absolutely positioned so
+// opening it overlays rather than reflowing the grid.
+.day-group {
+  position: relative;
+
+  > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .more {
+    color: $lichen;
+    font-size: 0.75rem;
+  }
+
+  &[open] > summary {
+    border-color: $amber;
+    color: $amber;
+  }
+
+  .day-menu {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 0.3rem);
+    left: 0;
+    min-width: 14rem;
+    max-width: 22rem;
+    margin: 0;
+    padding: 0.3rem;
+    list-style: none;
+    background: $duff;
+    border: 1px solid $rule;
+    border-radius: 4px;
+
+    a {
+      display: block;
+      padding: 0.25rem 0.45rem;
+      border-radius: 3px;
+      color: $birch;
+      font-size: 0.95rem;
+      text-decoration: none;
+
+      &:hover {
+        background: $bark;
+        color: $amber;
+      }
     }
   }
 }

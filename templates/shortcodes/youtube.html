@@ -1,0 +1,19 @@
+{#- Zola used to ship a built-in `youtube` shortcode; 0.22 does not, so here it
+    is. Usage:
+
+        {{ youtube(id="dQw4w9WgXcQ") }}
+        {{ youtube(id="dQw4w9WgXcQ", title="What it is", start=42) }}
+
+    youtube-nocookie.com is the privacy-preserving host: it skips the tracking
+    cookies until a viewer actually presses play. `title` is what a screen
+    reader announces, so it is worth setting. -#}
+<div class="video">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/{{ id }}{% if start %}?start={{ start }}{% endif %}"
+    title="{% if title %}{{ title }}{% else %}YouTube video{% endif %}"
+    loading="lazy"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>

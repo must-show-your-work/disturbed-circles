@@ -9,7 +9,7 @@ import LogCalendar from './LogCalendar.svelte';
 const calendar = document.querySelector<HTMLElement>('.log-calendar');
 
 if (calendar) {
-  const entries = [...document.querySelectorAll<HTMLAnchorElement>('a.day[data-date]')].map((a) => ({
+  const entries = [...document.querySelectorAll<HTMLAnchorElement>('a[data-date]')].map((a) => ({
     date: a.dataset.date!,
     times: Number(a.dataset.times) || 1,
     href: a.href,

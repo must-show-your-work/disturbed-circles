@@ -13,6 +13,9 @@ pdf: svelte logs stage
 check: stage
     zola --root .build/site check
 
+new-log slug title="" section="":
+    bin/new-log "{{slug}}" "{{title}}" "{{section}}"
+
 logs:
     bin/build-logs --prefer "${LOGS_PREFER:-path}"
 
