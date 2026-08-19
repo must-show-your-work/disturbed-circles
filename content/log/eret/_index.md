@@ -6,7 +6,7 @@ weight = 4
 
 [extra]
 section = "Code"
-nav_title = "eret"
+nav_title = "Eret"
 titles_are_dates = false
 calendar = true
 +++

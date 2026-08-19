@@ -82,7 +82,7 @@ section = "Math"
 
 [[extra.logs]]
 name = "High Tide"
-# repo = "must-show-your-work/geometry-is-your-friend"
+repo = "must-show-your-work/high-tide"
 path = "../high-tide"
 weight = 10
 section = "Math"

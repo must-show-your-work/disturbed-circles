@@ -6,7 +6,7 @@ weight = 2
 
 [extra]
 section = "Circles"
-nav_title = "music"
+nav_title = "Music"
 titles_are_dates = false
 calendar = true
 +++
